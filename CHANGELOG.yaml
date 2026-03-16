@@ -1,0 +1,16 @@
+project: base-cli
+versions:
+    unreleased: {}
+    0.0.1:
+        date: 2026-03-16
+        added:
+            - Initial project scaffolding
+            - '`base-cli init` command to generate Go CLI projects'
+            - Scaffold engine with embed.FS and template walking
+            - Interactive prompts for module path and description
+            - Support for MIT, Apache-2.0, and no license
+            - GitHub Actions and GitLab CI template generation
+            - Shell installer with checksum verification
+            - Uninstaller script for generated projects
+            - '`base-cli uninstall` for self-removal'
+            - '`base-cli version` with pretty ASCII box display'

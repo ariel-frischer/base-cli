@@ -1,0 +1,78 @@
+<div align="center">
+
+**[% .ProjectName %]**
+
+[% .Description %]
+
+[%- if .CIGitHub %]
+
+[![CI](https://github.com/[% .GitUser %]/[% .ProjectName %]/actions/workflows/ci.yml/badge.svg)](https://github.com/[% .GitUser %]/[% .ProjectName %]/actions/workflows/ci.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/[% .GitUser %]/[% .ProjectName %])](https://github.com/[% .GitUser %]/[% .ProjectName %]/releases/latest)
+[%- end %]
+[%- if ne .License "none" %]
+[![License: [% if eq .License "mit" %]MIT[% else %]Apache-2.0[% end %]](https://img.shields.io/badge/License-[% if eq .License "mit" %]MIT[% else %]Apache--2.0[% end %]-blue.svg)]([% if eq .License "mit" %]https://opensource.org/licenses/MIT[% else %]https://opensource.org/licenses/Apache-2.0[% end %])
+[%- end %]
+
+</div>
+
+## Install
+
+[%- if .CIGitHub %]
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/[% .GitUser %]/[% .ProjectName %]/main/install.sh | sh
+```
+
+[%- end %]
+
+**Go install**:
+
+```bash
+go install [% .ModulePath %]@latest
+```
+
+**From source**:
+
+```bash
+git clone [% .RepoURL %].git
+cd [% .ProjectName %]
+make build    # Binary at bin/[% .BinaryName %]
+```
+
+## Usage
+
+```bash
+[% .BinaryName %] --help
+```
+
+## Development
+
+```bash
+make build          # Build binary
+make test           # Run tests
+make lint           # Run linters
+make format         # Format code
+```
+
+## Shell Completion
+
+```bash
+# Bash
+source <([% .BinaryName %] completion bash)
+
+# Zsh
+source <([% .BinaryName %] completion zsh)
+
+# Fish
+[% .BinaryName %] completion fish > ~/.config/fish/completions/[% .BinaryName %].fish
+```
+[%- if ne .License "none" %]
+
+## License
+
+[%- if eq .License "mit" %]
+[MIT](LICENSE)
+[%- else %]
+[Apache-2.0](LICENSE)
+[%- end %]
+[%- end %]
