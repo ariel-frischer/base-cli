@@ -30,5 +30,7 @@ func init() {
 		}
 	}
 
+	rootCmd.SetHelpFunc(colorizedHelp)
+
 	rootCmd.AddCommand(versionCmd)
 }

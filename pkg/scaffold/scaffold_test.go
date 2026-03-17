@@ -41,6 +41,7 @@ func TestGenerate(t *testing.T) {
 		"cmd/test-project/root.go",
 		"cmd/test-project/version.go",
 		"cmd/test-project/ui.go",
+		"cmd/test-project/help.go",
 		"internal/version/version.go",
 		"internal/version/version_test.go",
 		"pkg/testproject/doc.go",
@@ -136,6 +137,7 @@ func TestGenerateLayoutCLI(t *testing.T) {
 	cliFiles := []string{
 		"cmd/my-cli/main.go",
 		"cmd/my-cli/root.go",
+		"cmd/my-cli/help.go",
 		"internal/version/version.go",
 		"install.sh",
 		".goreleaser.yaml",

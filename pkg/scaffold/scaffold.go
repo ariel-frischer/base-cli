@@ -160,6 +160,8 @@ func resolveOutputPath(relPath, binaryName, libPackage, license string) string {
 	out = strings.ReplaceAll(out, "{{LibPackage}}", libPackage)
 
 	switch {
+	case strings.HasPrefix(out, "skills/"):
+		out = "." + out
 	case strings.HasPrefix(out, "github/"):
 		out = "." + out
 	case strings.HasPrefix(out, "gitlab/"):

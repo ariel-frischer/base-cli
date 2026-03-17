@@ -67,6 +67,51 @@ import "[% .ModulePath %]/pkg/[% .LibPackage %]"
 ```
 [%- end %]
 
+### AI Agent Skill
+
+This project ships a [SKILL.md](.skills/default/SKILL.md) following the [Agent Skills open standard](https://agentskills.io). Install it so your coding agent knows all commands and options.
+
+**Quick install with [`skills`](https://skills.sh) CLI** (by Vercel Labs):
+
+```bash
+npx skills add [% .GitUser %]/[% .ProjectName %]
+```
+
+<details>
+<summary><strong>Manual install</strong></summary>
+
+**Claude Code** — Skills live in `~/.claude/skills/` (global) or `.claude/skills/` (project-local).
+
+```bash
+# Global — available in all projects
+mkdir -p ~/.claude/skills/[% .ProjectName %]
+curl -fsSL https://raw.githubusercontent.com/[% .GitUser %]/[% .ProjectName %]/main/.skills/default/SKILL.md \
+  -o ~/.claude/skills/[% .ProjectName %]/SKILL.md
+
+# Project-local — checked into this repo only
+mkdir -p .claude/skills/[% .ProjectName %]
+curl -fsSL https://raw.githubusercontent.com/[% .GitUser %]/[% .ProjectName %]/main/.skills/default/SKILL.md \
+  -o .claude/skills/[% .ProjectName %]/SKILL.md
+```
+
+**Codex CLI** — reads skills from `~/.codex/skills/` (global) or `.codex/skills/` (project-local).
+
+```bash
+# Global
+mkdir -p ~/.codex/skills/[% .ProjectName %]
+curl -fsSL https://raw.githubusercontent.com/[% .GitUser %]/[% .ProjectName %]/main/.skills/default/SKILL.md \
+  -o ~/.codex/skills/[% .ProjectName %]/SKILL.md
+
+# Project-local
+mkdir -p .codex/skills/[% .ProjectName %]
+curl -fsSL https://raw.githubusercontent.com/[% .GitUser %]/[% .ProjectName %]/main/.skills/default/SKILL.md \
+  -o .codex/skills/[% .ProjectName %]/SKILL.md
+```
+
+Or pass directly: `codex --instructions .skills/default/SKILL.md`
+
+</details>
+
 ## Development
 
 ```bash

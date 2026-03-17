@@ -31,6 +31,8 @@ func init() {
 		}
 	}
 
+	rootCmd.SetHelpFunc(colorizedHelp)
+
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(uninstallCmd)

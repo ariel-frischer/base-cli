@@ -1,0 +1,50 @@
+---
+name: [% .ProjectName %]
+description: >
+  [% .Description %]
+license: [% if eq .License "none" %]UNLICENSED[% else if eq .License "mit" %]MIT[% else %]Apache-2.0[% end %]
+compatibility:
+  - Claude Code
+  - Cursor
+  - Codex
+  - Gemini CLI
+  - VS Code
+metadata:
+  author: [% .Author %]
+  version: 0.0.1
+  tags: go[% if .HasCLI %], cli[% end %][% if .HasLib %], library[% end %]
+allowed-tools: Bash Read Write Edit
+---
+
+# [% .ProjectName %]
+
+[% .Description %]
+[%- if .HasCLI %]
+
+## Commands
+
+```bash
+[% .BinaryName %] --help              # Show available commands
+[% .BinaryName %] version             # Show version info
+[% .BinaryName %] completion bash     # Shell completion: bash|zsh|fish|powershell
+```
+[%- end %]
+[%- if .HasLib %]
+
+## Library Usage
+
+```go
+import "[% .ModulePath %]/pkg/[% .LibPackage %]"
+```
+[%- end %]
+
+## Development
+
+```bash
+[%- if .HasCLI %]
+make build          # Build binary
+[%- end %]
+make test           # Run tests
+make lint           # Run linters
+make format         # Format code
+```
