@@ -1,4 +1,4 @@
-// Package scaffold generates Go CLI project scaffolds from embedded templates.
+// Package scaffold generates Go project scaffolds from embedded templates.
 package scaffold
 
 import (
@@ -28,6 +28,10 @@ type Config struct {
 	CIGitLab    bool
 	EnvPrefix   string
 	License     string // "mit", "apache2", "none"
+	Layout      string // "both", "cli", "lib"
+	HasCLI      bool   // true for "both" and "cli"
+	HasLib      bool   // true for "both" and "lib"
+	LibPackage  string // Go-safe package name (hyphens stripped)
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -48,38 +52,22 @@ func Generate(cfg Config, destDir string) error {
 			return nil
 		}
 
-		// Conditional directory skipping
 		if d.IsDir() {
-			if (relPath == "github" || strings.HasPrefix(relPath, "github/")) && !cfg.CIGitHub {
-				return fs.SkipDir
-			}
-			if (relPath == "gitlab" || strings.HasPrefix(relPath, "gitlab/")) && !cfg.CIGitLab {
-				return fs.SkipDir
-			}
+			return skipDir(relPath, cfg)
+		}
+
+		if skipFile(relPath, cfg) {
 			return nil
 		}
 
-		// Skip license files that don't match selection
-		if cfg.License != "mit" && relPath == "LICENSE_mit.tmpl" {
-			return nil
-		}
-		if cfg.License != "apache2" && relPath == "LICENSE_apache2.tmpl" {
-			return nil
-		}
-		if cfg.License == "none" && (relPath == "LICENSE_mit.tmpl" || relPath == "LICENSE_apache2.tmpl") {
-			return nil
-		}
-
-		// Resolve output path: strip .tmpl, replace {{BinaryName}}, fix special paths
-		outPath := resolveOutputPath(relPath, cfg.BinaryName, cfg.License)
+		// Resolve output path: strip .tmpl, replace placeholders, fix special paths
+		outPath := resolveOutputPath(relPath, cfg.BinaryName, cfg.LibPackage, cfg.License)
 		fullPath := filepath.Join(destDir, outPath)
 
-		// Ensure parent directory exists
 		if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
 			return fmt.Errorf("creating directory for %s: %w", outPath, err)
 		}
 
-		// Read template content
 		content, err := templateFS.ReadFile(path)
 		if err != nil {
 			return fmt.Errorf("reading template %s: %w", path, err)
@@ -102,7 +90,6 @@ func Generate(cfg Config, destDir string) error {
 			return fmt.Errorf("executing template %s: %w", relPath, err)
 		}
 
-		// Make shell scripts executable
 		if strings.HasSuffix(outPath, ".sh") {
 			if err := os.Chmod(fullPath, 0o755); err != nil {
 				return fmt.Errorf("chmod %s: %w", outPath, err)
@@ -113,20 +100,69 @@ func Generate(cfg Config, destDir string) error {
 	})
 }
 
+// skipDir returns fs.SkipDir for directories that should be excluded based on config.
+func skipDir(relPath string, cfg Config) error {
+	// CI provider filtering
+	if matchesPrefix(relPath, "github") && !cfg.CIGitHub {
+		return fs.SkipDir
+	}
+	if matchesPrefix(relPath, "gitlab") && !cfg.CIGitLab {
+		return fs.SkipDir
+	}
+
+	// Layout filtering
+	if !cfg.HasCLI {
+		if matchesPrefix(relPath, "cmd") || matchesPrefix(relPath, "internal") {
+			return fs.SkipDir
+		}
+		if matchesPrefix(relPath, "scripts") {
+			return fs.SkipDir
+		}
+	}
+	if !cfg.HasLib && matchesPrefix(relPath, "pkg") {
+		return fs.SkipDir
+	}
+
+	return nil
+}
+
+// skipFile returns true for files that should be excluded based on config.
+func skipFile(relPath string, cfg Config) bool {
+	// License filtering
+	if cfg.License != "mit" && relPath == "LICENSE_mit.tmpl" {
+		return true
+	}
+	if cfg.License != "apache2" && relPath == "LICENSE_apache2.tmpl" {
+		return true
+	}
+
+	// CLI-only files skipped for lib layout
+	if !cfg.HasCLI {
+		switch relPath {
+		case "install.sh.tmpl", "uninstall.sh.tmpl", "goreleaser.yaml.tmpl":
+			return true
+		}
+	}
+
+	return false
+}
+
+// matchesPrefix returns true if relPath equals prefix or starts with prefix/.
+func matchesPrefix(relPath, prefix string) bool {
+	return relPath == prefix || strings.HasPrefix(relPath, prefix+"/")
+}
+
 // resolveOutputPath converts a template path to the final output path.
-func resolveOutputPath(relPath, binaryName, license string) string {
-	// Strip .tmpl extension
+func resolveOutputPath(relPath, binaryName, libPackage, license string) string {
 	out := strings.TrimSuffix(relPath, ".tmpl")
 
-	// Replace {{BinaryName}} placeholder in directory/file names
 	out = strings.ReplaceAll(out, "{{BinaryName}}", binaryName)
+	out = strings.ReplaceAll(out, "{{LibPackage}}", libPackage)
 
-	// Special path mappings
 	switch {
 	case strings.HasPrefix(out, "github/"):
-		out = "." + out // github/ -> .github/
+		out = "." + out
 	case strings.HasPrefix(out, "gitlab/"):
-		// gitlab/gitlab-ci.yml -> .gitlab-ci.yml
 		out = "." + strings.TrimPrefix(out, "gitlab/")
 	case out == "goreleaser.yaml":
 		out = ".goreleaser.yaml"

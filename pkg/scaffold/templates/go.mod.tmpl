@@ -1,6 +1,7 @@
 module [% .ModulePath %]
 
 go 1.25.5
+[%- if .HasCLI %]
 
 require (
 	github.com/fatih/color v1.18.0
@@ -14,3 +15,4 @@ require (
 	github.com/spf13/pflag v1.0.9 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 )
+[%- end %]

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ariel-frischer/base-cli/internal/scaffold"
+	"github.com/ariel-frischer/base-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 )
 
@@ -19,14 +19,15 @@ var (
 	flagAuthor      string
 	flagLicense     string
 	flagCI          string
+	flagLayout      string
 	flagDir         string
 	flagNoGitInit   bool
 )
 
 var initCmd = &cobra.Command{
 	Use:   "init <project-name>",
-	Short: "Generate a new Go CLI project",
-	Long:  "Scaffold a complete, ready-to-build Go CLI project with best practices.",
+	Short: "Generate a new Go project",
+	Long:  "Scaffold a complete, ready-to-build Go project with best practices.\n\nLayout options:\n  both   CLI + library (cmd/ + pkg/) — default\n  cli    CLI only (cmd/ + internal/)\n  lib    Library only (pkg/)",
 	Args:  cobra.ExactArgs(1),
 	RunE:  runInit,
 }
@@ -37,6 +38,7 @@ func init() {
 	initCmd.Flags().StringVar(&flagAuthor, "author", "", "Author name (default: git config user.name)")
 	initCmd.Flags().StringVar(&flagLicense, "license", "mit", "License type: mit, apache2, none")
 	initCmd.Flags().StringVar(&flagCI, "ci", "github", "CI provider: github, gitlab, both")
+	initCmd.Flags().StringVar(&flagLayout, "layout", "both", "Project layout: both (cli+lib), cli, lib")
 	initCmd.Flags().StringVar(&flagDir, "dir", "", "Output directory (default: ./<name>)")
 	initCmd.Flags().BoolVar(&flagNoGitInit, "no-git-init", false, "Skip git init")
 }
@@ -92,6 +94,18 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("invalid license %q: must be mit, apache2, or none", flagLicense)
 	}
 
+	// Validate layout
+	hasCLI, hasLib := true, true
+	switch flagLayout {
+	case "both":
+	case "cli":
+		hasLib = false
+	case "lib":
+		hasCLI = false
+	default:
+		return fmt.Errorf("invalid layout %q: must be both, cli, or lib", flagLayout)
+	}
+
 	// Validate CI
 	ciGitHub, ciGitLab := false, false
 	switch flagCI {
@@ -108,6 +122,9 @@ func runInit(cmd *cobra.Command, args []string) error {
 
 	// Build env prefix: MY-CLI -> MY_CLI
 	envPrefix := strings.ToUpper(strings.ReplaceAll(projectName, "-", "_"))
+
+	// Build Go-safe package name: my-tool -> mytool
+	libPackage := strings.ReplaceAll(projectName, "-", "")
 
 	// Determine repo URL
 	repoURL := fmt.Sprintf("https://github.com/%s/%s", gitUser, projectName)
@@ -128,6 +145,10 @@ func runInit(cmd *cobra.Command, args []string) error {
 		CIGitLab:    ciGitLab,
 		EnvPrefix:   envPrefix,
 		License:     flagLicense,
+		Layout:      flagLayout,
+		HasCLI:      hasCLI,
+		HasLib:      hasLib,
+		LibPackage:  libPackage,
 	}
 
 	// Check if directory already exists and is non-empty
@@ -162,8 +183,12 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 	fmt.Println("Next steps:")
 	fmt.Printf("  cd %s\n", destDir)
-	fmt.Println("  make build")
-	fmt.Printf("  ./bin/%s version\n", projectName)
+	if hasCLI {
+		fmt.Println("  make build")
+		fmt.Printf("  ./bin/%s version\n", projectName)
+	} else {
+		fmt.Println("  make test")
+	}
 	fmt.Println()
 
 	return nil

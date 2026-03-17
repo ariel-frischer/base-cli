@@ -16,43 +16,68 @@
 </div>
 
 ## Install
-
+[%- if .HasCLI %]
 [%- if .CIGitHub %]
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/[% .GitUser %]/[% .ProjectName %]/main/install.sh | sh
 ```
-
 [%- end %]
 
 **Go install**:
 
 ```bash
-go install [% .ModulePath %]@latest
+go install [% .ModulePath %]/cmd/[% .BinaryName %]@latest
 ```
+[%- end %]
+[%- if .HasLib %]
+
+**Go get** (library):
+
+```bash
+go get [% .ModulePath %]
+```
+[%- end %]
 
 **From source**:
 
 ```bash
 git clone [% .RepoURL %].git
 cd [% .ProjectName %]
+[%- if .HasCLI %]
 make build    # Binary at bin/[% .BinaryName %]
+[%- else %]
+make test
+[%- end %]
 ```
+[%- if .HasCLI %]
 
 ## Usage
 
 ```bash
 [% .BinaryName %] --help
 ```
+[%- end %]
+[%- if .HasLib %]
+
+## Library Usage
+
+```go
+import "[% .ModulePath %]/pkg/[% .LibPackage %]"
+```
+[%- end %]
 
 ## Development
 
 ```bash
+[%- if .HasCLI %]
 make build          # Build binary
+[%- end %]
 make test           # Run tests
 make lint           # Run linters
 make format         # Format code
 ```
+[%- if .HasCLI %]
 
 ## Shell Completion
 
@@ -66,6 +91,7 @@ source <([% .BinaryName %] completion zsh)
 # Fish
 [% .BinaryName %] completion fish > ~/.config/fish/completions/[% .BinaryName %].fish
 ```
+[%- end %]
 [%- if ne .License "none" %]
 
 ## License

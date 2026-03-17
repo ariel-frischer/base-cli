@@ -1,3 +1,4 @@
+[%- if .HasCLI %]
 .PHONY: help install i test test-v test-coverage lint lint-go format clean build run go-install uninstall release patch minor major prep-release
 
 MODULE_PATH=[% .ModulePath %]
@@ -90,3 +91,43 @@ major: ## Bump major version and release
 	$(eval NEXT=v$(shell echo $(CURRENT) | awk -F. '{printf "%d.0.0", $$1+1}'))
 	@echo "Bumping $(CURRENT) -> $(NEXT)"
 	$(MAKE) release VERSION=$(NEXT)
+[%- else %]
+.PHONY: help install i test test-v test-coverage lint lint-go format clean
+
+help: ## Show this help message
+	@echo 'Usage: make [target]'
+	@echo ''
+	@echo 'Available targets:'
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+install: ## Download dependencies
+	go mod download
+
+i: install ## Alias for install
+
+test: ## Run tests
+	go test ./...
+
+test-v: ## Run tests (verbose)
+	go test -v ./...
+
+test-coverage: ## Run tests with coverage
+	go test -race -coverprofile=coverage.out ./...
+
+lint: lint-go ## Run all linters
+
+lint-go: ## Run Go linters
+	@if command -v golangci-lint >/dev/null 2>&1; then \
+		golangci-lint run; \
+	else \
+		echo "golangci-lint not installed, running go vet"; \
+		go vet ./...; \
+	fi
+
+format: ## Format code
+	go fmt ./...
+
+clean: ## Clean build artifacts
+	go clean
+	rm -rf coverage.out
+[%- end %]

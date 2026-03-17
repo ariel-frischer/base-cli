@@ -7,7 +7,9 @@
 ## Commands
 
 ```bash
+[%- if .HasCLI %]
 make build          # Build binary
+[%- end %]
 make test           # Run tests
 make lint           # Run linters
 make format         # Format code
@@ -16,8 +18,13 @@ make format         # Format code
 ## Architecture
 
 ```
+[%- if .HasCLI %]
 cmd/[% .BinaryName %]/      # CLI entry point (cobra)
 internal/version/    # Version info (ldflags)
+[%- end %]
+[%- if .HasLib %]
+pkg/[% .LibPackage %]/      # Public library package
+[%- end %]
 ```
 
 ## Coding Standards
