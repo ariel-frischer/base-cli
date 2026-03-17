@@ -12,7 +12,7 @@ var (
 	helpHeading = color.New(color.FgYellow, color.Bold).SprintFunc()
 	helpCmd     = color.New(color.FgCyan).SprintFunc()
 	helpFlag    = color.New(color.FgGreen).SprintFunc()
-	helpDescFmt    = color.New(color.FgWhite).SprintFunc()
+	helpDescFmt = color.New(color.FgWhite).SprintFunc()
 	helpDim     = color.New(color.Faint).SprintFunc()
 )
 

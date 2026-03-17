@@ -48,7 +48,7 @@ var uninstallCmd = &cobra.Command{
 		pattern := filepath.Join(dir, base+".backup.*")
 		backups, _ := filepath.Glob(pattern)
 		for _, b := range backups {
-			os.Remove(b)
+			_ = os.Remove(b)
 		}
 
 		success("base-cli has been removed from %s", dir)

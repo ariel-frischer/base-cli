@@ -32,6 +32,7 @@ type Config struct {
 	HasCLI      bool   // true for "both" and "cli"
 	HasLib      bool   // true for "both" and "lib"
 	LibPackage  string // Go-safe package name (hyphens stripped)
+	Goreleaser  bool   // Include goreleaser config and release workflow
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -84,10 +85,13 @@ func Generate(cfg Config, destDir string) error {
 		if err != nil {
 			return fmt.Errorf("creating file %s: %w", fullPath, err)
 		}
-		defer f.Close()
 
 		if err := tmpl.Execute(f, cfg); err != nil {
+			f.Close()
 			return fmt.Errorf("executing template %s: %w", relPath, err)
+		}
+		if err := f.Close(); err != nil {
+			return fmt.Errorf("closing file %s: %w", fullPath, err)
 		}
 
 		if strings.HasSuffix(outPath, ".sh") {
@@ -140,6 +144,15 @@ func skipFile(relPath string, cfg Config) bool {
 	if !cfg.HasCLI {
 		switch relPath {
 		case "install.sh.tmpl", "uninstall.sh.tmpl", "goreleaser.yaml.tmpl":
+			return true
+		}
+	}
+
+	// Goreleaser-related files
+	if !cfg.Goreleaser {
+		switch relPath {
+		case "goreleaser.yaml.tmpl", "scripts/release.sh.tmpl",
+			"github/workflows/release.yml.tmpl":
 			return true
 		}
 	}

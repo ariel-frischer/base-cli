@@ -25,6 +25,7 @@ func bothConfig(name string) Config {
 		HasCLI:      true,
 		HasLib:      true,
 		LibPackage:  strings.ReplaceAll(name, "-", ""),
+		Goreleaser:  true,
 	}
 }
 
@@ -56,6 +57,7 @@ func TestGenerate(t *testing.T) {
 		"uninstall.sh",
 		"scripts/release.sh",
 		".github/workflows/ci.yml",
+		".github/workflows/release.yml",
 		"CHANGELOG.yaml",
 		".chlog.yaml",
 	}
@@ -208,6 +210,33 @@ func TestGenerateLayoutLib(t *testing.T) {
 	}
 }
 
+func TestGenerateNoGoreleaser(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.Goreleaser = false
+
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	shouldNotExist := []string{
+		".goreleaser.yaml",
+		".github/workflows/release.yml",
+		"scripts/release.sh",
+	}
+	for _, f := range shouldNotExist {
+		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
+			t.Errorf("%s should not exist when Goreleaser=false", f)
+		}
+	}
+
+	// CI workflow should still exist
+	if _, err := os.Stat(filepath.Join(destDir, ".github/workflows/ci.yml")); os.IsNotExist(err) {
+		t.Error("ci.yml should still exist when Goreleaser=false")
+	}
+}
+
 func TestResolveOutputPath(t *testing.T) {
 	tests := map[string]struct {
 		relPath    string
@@ -226,6 +255,7 @@ func TestResolveOutputPath(t *testing.T) {
 		"license apache": {"LICENSE_apache2.tmpl", "foo", "foo", "apache2", "LICENSE"},
 		"changelog yaml": {"chlog.yaml.tmpl", "foo", "foo", "mit", "CHANGELOG.yaml"},
 		"chlog config":   {"chlog-config.yaml.tmpl", "foo", "foo", "mit", ".chlog.yaml"},
+		"release yml":    {"github/workflows/release.yml.tmpl", "foo", "foo", "mit", ".github/workflows/release.yml"},
 	}
 
 	for name, tt := range tests {

@@ -21,7 +21,8 @@ var (
 	flagCI          string
 	flagLayout      string
 	flagDir         string
-	flagNoGitInit   bool
+	flagNoGitInit    bool
+	flagNoGoreleaser bool
 )
 
 var initCmd = &cobra.Command{
@@ -41,6 +42,7 @@ func init() {
 	initCmd.Flags().StringVar(&flagLayout, "layout", "both", "Project layout: both (cli+lib), cli, lib")
 	initCmd.Flags().StringVar(&flagDir, "dir", "", "Output directory (default: ./<name>)")
 	initCmd.Flags().BoolVar(&flagNoGitInit, "no-git-init", false, "Skip git init")
+	initCmd.Flags().BoolVar(&flagNoGoreleaser, "no-goreleaser", false, "Skip goreleaser config and release workflow")
 }
 
 func runInit(cmd *cobra.Command, args []string) error {
@@ -149,6 +151,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		HasCLI:      hasCLI,
 		HasLib:      hasLib,
 		LibPackage:  libPackage,
+		Goreleaser:  !flagNoGoreleaser,
 	}
 
 	// Check if directory already exists and is non-empty

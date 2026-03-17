@@ -32,8 +32,3 @@ func highlight(s string) string {
 func fileRef(s string) string {
 	return fileFmt.Sprint(s)
 }
-
-// versionRef returns a magenta bold version string.
-func versionRef(s string) string {
-	return versionFmt.Sprint(s)
-}
