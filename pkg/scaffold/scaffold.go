@@ -35,6 +35,8 @@ type Config struct {
 	Goreleaser  bool   // Include goreleaser config and release workflow
 	Community   bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)
 	Changelog   bool   // Include changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
+	AgentMDClaude bool // Include CLAUDE.md and .skills/
+	AgentMDAgents bool // Include AGENTS.md
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -118,6 +120,11 @@ func skipDir(relPath string, cfg Config) error {
 
 	// Community files: skip issue templates dir
 	if !cfg.Community && matchesPrefix(relPath, "github/ISSUE_TEMPLATE") {
+		return fs.SkipDir
+	}
+
+	// Agent MD: skip .skills/ when Claude not selected
+	if !cfg.AgentMDClaude && matchesPrefix(relPath, "skills") {
 		return fs.SkipDir
 	}
 
