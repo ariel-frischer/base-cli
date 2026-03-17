@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `--no-changelog` flag to skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml) and CI changelog gate
 - `--agent-md` flag to control AI agent doc generation (both, claude, agents, none)
 - AGENTS.md template with module path, architecture, dependencies, and file conventions
+- User-level config system at `~/.config/base-cli/config.yaml` — set defaults for all init flags
+- `base-cli config` command with `init`, `show`, `set`, `edit`, `path` subcommands
+- Config values applied as defaults when CLI flags are not explicitly passed
 
 ## [0.0.1] - 2026-03-16
 

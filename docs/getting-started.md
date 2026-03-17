@@ -22,6 +22,26 @@ Verify it works:
 base-cli version
 ```
 
+## Set Up Defaults (Optional)
+
+If you plan to generate multiple projects, configure your preferences once so you don't have to pass the same flags every time:
+
+```bash
+# Create a config file at ~/.config/base-cli/config.yaml
+base-cli config init
+
+# Set your preferred defaults
+base-cli config set author "Your Name"
+base-cli config set license apache2
+base-cli config set ci github
+base-cli config set no_changelog true
+
+# View what's configured
+base-cli config show
+```
+
+All config values are optional. CLI flags always override them. See [Configuration](#configuration) below for the full reference.
+
 ## Your First Project
 
 ```bash
@@ -142,12 +162,69 @@ base-cli init <project-name> [flags]
   --ci github|gitlab|both             (default: both)
   --layout both|cli|lib               (default: both)
   --dir <path>            Output directory (default: ./<name>)
+  --agent-md both|claude|agents|none  (default: both)
   --no-git-init           Skip git init and initial commit
   --no-goreleaser         Skip goreleaser config and release workflow
   --no-community          Skip community files (issue templates, PR template, etc.)
   --no-changelog          Skip changelog files and CI changelog gate
   --no-color              Disable colored output (global flag)
 ```
+
+All flags (except `--module`, `--description`, and `--dir`) can be set as defaults via the config file. See [Configuration](#configuration).
+
+## Configuration
+
+base-cli supports user-level defaults stored at `~/.config/base-cli/config.yaml`. This is useful when you generate multiple projects and want consistent settings without repeating flags.
+
+### Managing Config
+
+```bash
+base-cli config init              # Create config file with commented defaults
+base-cli config init --force      # Overwrite existing config
+base-cli config show              # Show resolved values (config vs default)
+base-cli config set <key> <value> # Set a single value
+base-cli config edit              # Open in $EDITOR
+base-cli config path              # Print config file path
+```
+
+### Config File Format
+
+```yaml
+# ~/.config/base-cli/config.yaml
+# All fields are optional. CLI flags always override these values.
+
+author: Your Name
+license: apache2        # mit, apache2, none
+ci: github              # github, gitlab, both
+layout: both            # both, cli, lib
+agent_md: both          # both, claude, agents, none
+no_git_init: false
+no_goreleaser: false
+no_community: false
+no_changelog: false
+```
+
+### Precedence
+
+1. **CLI flag** (highest) — `--license mit` always wins
+2. **Config file** — `~/.config/base-cli/config.yaml`
+3. **Built-in default** (lowest) — hardcoded in the flag definition
+
+A config value is only applied when the corresponding flag is **not** explicitly passed on the command line.
+
+### Config Keys
+
+| Key | Type | Values | Default |
+|-----|------|--------|---------|
+| `author` | string | any | git config user.name |
+| `license` | string | `mit`, `apache2`, `none` | `mit` |
+| `ci` | string | `github`, `gitlab`, `both` | `both` |
+| `layout` | string | `both`, `cli`, `lib` | `both` |
+| `agent_md` | string | `both`, `claude`, `agents`, `none` | `both` |
+| `no_git_init` | bool | `true`, `false` | `false` |
+| `no_goreleaser` | bool | `true`, `false` | `false` |
+| `no_community` | bool | `true`, `false` | `false` |
+| `no_changelog` | bool | `true`, `false` | `false` |
 
 ## Using the Library API
 
