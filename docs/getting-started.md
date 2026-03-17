@@ -328,6 +328,11 @@ When goreleaser is enabled, the generated project includes a full release pipeli
 ## Other Commands
 
 ```bash
+base-cli config init          # Create ~/.config/base-cli/config.yaml
+base-cli config show          # Show resolved config with source labels
+base-cli config set key value # Set a config value
+base-cli config edit          # Open config in $EDITOR
+base-cli config path          # Print config file path
 base-cli version              # Version, commit, build date
 base-cli version --plain      # Machine-readable version string
 base-cli uninstall            # Remove base-cli from your system
