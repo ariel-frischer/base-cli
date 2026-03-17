@@ -188,6 +188,14 @@ func skipFile(relPath string, cfg Config) bool {
 		}
 	}
 
+	// Agent MD files
+	if !cfg.AgentMDClaude && relPath == "CLAUDE.md.tmpl" {
+		return true
+	}
+	if !cfg.AgentMDAgents && relPath == "AGENTS.md.tmpl" {
+		return true
+	}
+
 	return false
 }
 

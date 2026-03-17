@@ -26,9 +26,11 @@ func bothConfig(name string) Config {
 		HasCLI:      true,
 		HasLib:      true,
 		LibPackage:  strings.ReplaceAll(name, "-", ""),
-		Goreleaser:  true,
-		Community:   true,
-		Changelog:   true,
+		Goreleaser:    true,
+		Community:     true,
+		Changelog:     true,
+		AgentMDClaude: true,
+		AgentMDAgents: true,
 	}
 }
 
@@ -54,6 +56,7 @@ func TestGenerate(t *testing.T) {
 		"go.mod",
 		"README.md",
 		"CLAUDE.md",
+		"AGENTS.md",
 		"LICENSE",
 		".gitignore",
 		"install.sh",
@@ -462,6 +465,16 @@ func TestSkipDir(t *testing.T) {
 			cfg:     Config{HasCLI: false, HasLib: true},
 			want:    nil,
 		},
+		"skills skipped when no claude": {
+			relPath: "skills/default",
+			cfg:     Config{AgentMDClaude: false},
+			want:    fs.SkipDir,
+		},
+		"skills kept when claude": {
+			relPath: "skills/default",
+			cfg:     Config{AgentMDClaude: true},
+			want:    nil,
+		},
 		"unrelated dir kept": {
 			relPath: "docs",
 			cfg:     Config{},
@@ -538,6 +551,26 @@ func TestSkipFile(t *testing.T) {
 		"changelog yaml kept": {
 			relPath: "chlog.yaml.tmpl",
 			cfg:     Config{License: "mit", HasCLI: true, Changelog: true},
+			want:    false,
+		},
+		"CLAUDE.md skipped when no claude": {
+			relPath: "CLAUDE.md.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, AgentMDClaude: false},
+			want:    true,
+		},
+		"CLAUDE.md kept when claude": {
+			relPath: "CLAUDE.md.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, AgentMDClaude: true},
+			want:    false,
+		},
+		"AGENTS.md skipped when no agents": {
+			relPath: "AGENTS.md.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, AgentMDAgents: false},
+			want:    true,
+		},
+		"AGENTS.md kept when agents": {
+			relPath: "AGENTS.md.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, AgentMDAgents: true},
 			want:    false,
 		},
 		"regular file kept": {
@@ -629,5 +662,65 @@ func TestGenerateFileContents(t *testing.T) {
 	}
 	if !strings.Contains(string(docGo), "package mytool") {
 		t.Errorf("doc.go should declare package mytool, got:\n%s", docGo)
+	}
+}
+
+func TestGenerateAgentMDClaudeOnly(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.AgentMDClaude = true
+	cfg.AgentMDAgents = false
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(destDir, "CLAUDE.md")); os.IsNotExist(err) {
+		t.Error("CLAUDE.md should exist when AgentMDClaude=true")
+	}
+	if _, err := os.Stat(filepath.Join(destDir, ".skills/default/SKILL.md")); os.IsNotExist(err) {
+		t.Error(".skills/ should exist when AgentMDClaude=true")
+	}
+	if _, err := os.Stat(filepath.Join(destDir, "AGENTS.md")); err == nil {
+		t.Error("AGENTS.md should not exist when AgentMDAgents=false")
+	}
+}
+
+func TestGenerateAgentMDAgentsOnly(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.AgentMDClaude = false
+	cfg.AgentMDAgents = true
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(destDir, "AGENTS.md")); os.IsNotExist(err) {
+		t.Error("AGENTS.md should exist when AgentMDAgents=true")
+	}
+	if _, err := os.Stat(filepath.Join(destDir, "CLAUDE.md")); err == nil {
+		t.Error("CLAUDE.md should not exist when AgentMDClaude=false")
+	}
+	if _, err := os.Stat(filepath.Join(destDir, ".skills")); err == nil {
+		t.Error(".skills/ should not exist when AgentMDClaude=false")
+	}
+}
+
+func TestGenerateAgentMDNone(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.AgentMDClaude = false
+	cfg.AgentMDAgents = false
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	shouldNotExist := []string{"CLAUDE.md", "AGENTS.md", ".skills"}
+	for _, f := range shouldNotExist {
+		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
+			t.Errorf("%s should not exist when both AgentMD flags are false", f)
+		}
 	}
 }

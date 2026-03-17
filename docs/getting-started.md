@@ -214,6 +214,7 @@ func main() {
 | `LibPackage` | string | Go-safe package name (hyphens stripped) |
 | `Goreleaser` | bool | Include goreleaser config and release tooling |
 | `Community` | bool | Include community files |
+| `Changelog` | bool | Include changelog files and CI gate ([chlog](https://github.com/ariel-frischer/chlog)) |
 
 ## Generated Installer
 

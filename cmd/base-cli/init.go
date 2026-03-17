@@ -25,6 +25,7 @@ var (
 	flagNoGoreleaser bool
 	flagNoCommunity  bool
 	flagNoChangelog  bool
+	flagAgentMD      string
 )
 
 var initCmd = &cobra.Command{
@@ -47,6 +48,7 @@ func init() {
 	initCmd.Flags().BoolVar(&flagNoGoreleaser, "no-goreleaser", false, "Skip goreleaser config and release workflow")
 	initCmd.Flags().BoolVar(&flagNoCommunity, "no-community", false, "Skip community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)")
 	initCmd.Flags().BoolVar(&flagNoChangelog, "no-changelog", false, "Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml, CI changelog gate)")
+	initCmd.Flags().StringVar(&flagAgentMD, "agent-md", "both", "AI agent docs: both, claude, agents, none")
 }
 
 func runInit(cmd *cobra.Command, args []string) error {
@@ -126,6 +128,20 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("invalid CI provider %q: must be github, gitlab, or both", flagCI)
 	}
 
+	// Validate agent-md
+	agentMDClaude, agentMDAgents := false, false
+	switch flagAgentMD {
+	case "both":
+		agentMDClaude, agentMDAgents = true, true
+	case "claude":
+		agentMDClaude = true
+	case "agents":
+		agentMDAgents = true
+	case "none":
+	default:
+		return fmt.Errorf("invalid agent-md %q: must be both, claude, agents, or none", flagAgentMD)
+	}
+
 	// Build env prefix: MY-CLI -> MY_CLI
 	envPrefix := strings.ToUpper(strings.ReplaceAll(projectName, "-", "_"))
 
@@ -157,7 +173,9 @@ func runInit(cmd *cobra.Command, args []string) error {
 		LibPackage:  libPackage,
 		Goreleaser:  !flagNoGoreleaser,
 		Community:   !flagNoCommunity,
-		Changelog:   !flagNoChangelog,
+		Changelog:     !flagNoChangelog,
+		AgentMDClaude: agentMDClaude,
+		AgentMDAgents: agentMDAgents,
 	}
 
 	// Check if directory already exists and is non-empty

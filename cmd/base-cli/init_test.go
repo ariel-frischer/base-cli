@@ -22,6 +22,7 @@ func resetInitFlags() {
 	flagNoGoreleaser = false
 	flagNoCommunity = false
 	flagNoChangelog = false
+	flagAgentMD = "both"
 }
 
 func TestRunInitNonInteractive(t *testing.T) {
@@ -190,5 +191,21 @@ func TestRunInitMissingModuleNonInteractive(t *testing.T) {
 
 	if err := rootCmd.Execute(); err == nil {
 		t.Error("expected error when --module not provided in non-interactive mode")
+	}
+}
+
+func TestRunInitInvalidAgentMD(t *testing.T) {
+	resetInitFlags()
+	rootCmd.SetArgs([]string{
+		"init", "test",
+		"--module", "github.com/test/test",
+		"--description", "x",
+		"--agent-md", "invalid",
+		"--dir", t.TempDir(),
+		"--no-git-init",
+	})
+
+	if err := rootCmd.Execute(); err == nil {
+		t.Error("expected error for invalid agent-md, got nil")
 	}
 }

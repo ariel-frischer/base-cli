@@ -1,0 +1,74 @@
+# AGENTS.md
+
+## Project: [% .ProjectName %]
+
+[% .Description %]
+
+- **Language:** Go
+- **Module:** `[% .ModulePath %]`
+- **Type:** [% if and .HasCLI .HasLib %]CLI + Library[% else if .HasCLI %]CLI[% else %]Library[% end %]
+
+## Commands
+
+```bash
+[%- if .HasCLI %]
+make build          # Build binary → ./bin/[% .BinaryName %]
+[%- end %]
+make test           # Run tests
+make lint           # Run linters (golangci-lint)
+make format         # Format code (gofumpt)
+```
+
+## Architecture
+
+```
+[%- if .HasCLI %]
+cmd/[% .BinaryName %]/      # CLI entry point (cobra)
+  main.go             # Binary entry point
+  root.go             # Root command + flag setup
+  version.go          # Version subcommand
+  ui.go               # Terminal output helpers
+  help.go             # Custom help formatting
+internal/
+  version/            # Version info injected via ldflags
+[%- end %]
+[%- if .HasLib %]
+pkg/[% .LibPackage %]/      # Public library package
+  testdata/           # Test fixtures
+[%- end %]
+assets/               # Demo content (GIFs, screenshots)
+[%- if .CIGitHub %]
+.github/workflows/    # GitHub Actions CI[% if .Goreleaser %] + release[% end %]
+[%- end %]
+[%- if .CIGitLab %]
+.gitlab-ci.yml        # GitLab CI[% if .Goreleaser %] + release[% end %]
+[%- end %]
+```
+
+## Dependencies
+
+[%- if .HasCLI %]
+- [cobra](https://github.com/spf13/cobra) — CLI framework
+[%- end %]
+[%- if .Goreleaser %]
+- [goreleaser](https://goreleaser.com) — Release automation
+[%- end %]
+[%- if .Changelog %]
+- [chlog](https://github.com/ariel-frischer/chlog) — Changelog management
+[%- end %]
+
+## Coding Standards
+
+- Functions under 40 lines
+- Errors wrapped with context: `fmt.Errorf("doing X: %w", err)`
+- Map-based table tests: `map[string]struct{}`
+- Accept interfaces, return concrete types
+
+## File Conventions
+
+- Templates use `[% "[%" %] [% "%]" %]` delimiters (avoids conflicts with goreleaser `{{ }}`)
+- Shell scripts in `scripts/` are `chmod +x`
+[%- if .HasLib %]
+- Test fixtures in `pkg/[% .LibPackage %]/testdata/`
+[%- end %]
+- Environment variable prefix: `[% .EnvPrefix %]`
