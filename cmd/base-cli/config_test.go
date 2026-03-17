@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ariel-frischer/base-cli/internal/config"
+	"github.com/spf13/cobra"
 )
 
 func TestConfigInitCreatesFile(t *testing.T) {
@@ -52,8 +53,29 @@ func TestConfigSetAndLoad(t *testing.T) {
 	}
 }
 
+// newTestInitCmd creates a fresh cobra command with the same flags as initCmd,
+// avoiding shared Changed state across tests.
+func newTestInitCmd() (*cobra.Command, *string, *string, *string, *string, *bool, *bool, *bool, *bool, *string) {
+	var license, ci, layout, author string
+	var noGitInit, noGoreleaser, noCommunity, noChangelog bool
+	var agentMD string
+
+	cmd := &cobra.Command{Use: "init", RunE: func(cmd *cobra.Command, args []string) error { return nil }}
+	cmd.Flags().StringVar(&author, "author", "", "")
+	cmd.Flags().StringVar(&license, "license", "mit", "")
+	cmd.Flags().StringVar(&ci, "ci", "both", "")
+	cmd.Flags().StringVar(&layout, "layout", "both", "")
+	cmd.Flags().StringVar(&agentMD, "agent-md", "both", "")
+	cmd.Flags().BoolVar(&noGitInit, "no-git-init", false, "")
+	cmd.Flags().BoolVar(&noGoreleaser, "no-goreleaser", false, "")
+	cmd.Flags().BoolVar(&noCommunity, "no-community", false, "")
+	cmd.Flags().BoolVar(&noChangelog, "no-changelog", false, "")
+
+	return cmd, &license, &ci, &layout, &author, &noGitInit, &noGoreleaser, &noCommunity, &noChangelog, &agentMD
+}
+
 func TestApplyConfigDefaults(t *testing.T) {
-	resetInitFlags()
+	cmd, license, ci, layout, _, _, noGoreleaser, noCommunity, _, agentMD := newTestInitCmd()
 
 	userCfg := &config.Config{
 		License:      "apache2",
@@ -64,33 +86,30 @@ func TestApplyConfigDefaults(t *testing.T) {
 		NoCommunity:  config.BoolPtr(true),
 	}
 
-	// Reset cobra's Changed state by re-parsing with no flags
-	initCmd.ParseFlags([]string{})
+	applyConfigDefaults(cmd, userCfg)
 
-	applyConfigDefaults(initCmd, userCfg)
-
-	if flagLicense != "apache2" {
-		t.Errorf("License: got %q, want apache2", flagLicense)
+	if *license != "apache2" {
+		t.Errorf("License: got %q, want apache2", *license)
 	}
-	if flagCI != "github" {
-		t.Errorf("CI: got %q, want github", flagCI)
+	if *ci != "github" {
+		t.Errorf("CI: got %q, want github", *ci)
 	}
-	if flagLayout != "cli" {
-		t.Errorf("Layout: got %q, want cli", flagLayout)
+	if *layout != "cli" {
+		t.Errorf("Layout: got %q, want cli", *layout)
 	}
-	if flagAgentMD != "none" {
-		t.Errorf("AgentMD: got %q, want none", flagAgentMD)
+	if *agentMD != "none" {
+		t.Errorf("AgentMD: got %q, want none", *agentMD)
 	}
-	if !flagNoGoreleaser {
+	if !*noGoreleaser {
 		t.Error("NoGoreleaser: expected true")
 	}
-	if !flagNoCommunity {
+	if !*noCommunity {
 		t.Error("NoCommunity: expected true")
 	}
 }
 
 func TestApplyConfigDefaultsFlagOverride(t *testing.T) {
-	resetInitFlags()
+	cmd, license, ci, _, _, _, _, _, _, _ := newTestInitCmd()
 
 	userCfg := &config.Config{
 		License: "apache2",
@@ -98,16 +117,16 @@ func TestApplyConfigDefaultsFlagOverride(t *testing.T) {
 	}
 
 	// Parse with explicit --license flag so cobra marks it as Changed
-	initCmd.ParseFlags([]string{"--license", "mit"})
-	applyConfigDefaults(initCmd, userCfg)
+	cmd.ParseFlags([]string{"--license", "mit"})
+	applyConfigDefaults(cmd, userCfg)
 
-	// Explicit flag should win
-	if flagLicense != "mit" {
-		t.Errorf("License: got %q, want mit (explicit flag should override config)", flagLicense)
+	// Explicit flag should win over config
+	if *license != "mit" {
+		t.Errorf("License: got %q, want mit (explicit flag should override config)", *license)
 	}
 	// Non-explicit should use config
-	if flagCI != "gitlab" {
-		t.Errorf("CI: got %q, want gitlab (config default)", flagCI)
+	if *ci != "gitlab" {
+		t.Errorf("CI: got %q, want gitlab (config default)", *ci)
 	}
 }
 
@@ -116,7 +135,6 @@ func TestConfigShowCommand(t *testing.T) {
 
 	rootCmd.SetArgs([]string{"config", "show"})
 
-	// Should not error even without a config file
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatalf("config show failed: %v", err)
 	}
@@ -131,7 +149,7 @@ func TestConfigPathCommand(t *testing.T) {
 }
 
 func TestInitWithConfigFile(t *testing.T) {
-	resetInitFlags()
+	cmd, license, _, _, _, _, _, _, noChangelog, agentMD := newTestInitCmd()
 
 	dir := t.TempDir()
 	cfgPath := filepath.Join(dir, "config.yaml")
@@ -149,17 +167,15 @@ func TestInitWithConfigFile(t *testing.T) {
 		t.Fatalf("Load config: %v", err)
 	}
 
-	// Reset cobra's Changed state
-	initCmd.ParseFlags([]string{})
-	applyConfigDefaults(initCmd, loaded)
+	applyConfigDefaults(cmd, loaded)
 
-	if flagLicense != "apache2" {
-		t.Errorf("License from config: got %q, want apache2", flagLicense)
+	if *license != "apache2" {
+		t.Errorf("License from config: got %q, want apache2", *license)
 	}
-	if !flagNoChangelog {
+	if !*noChangelog {
 		t.Error("NoChangelog from config: expected true")
 	}
-	if flagAgentMD != "none" {
-		t.Errorf("AgentMD from config: got %q, want none", flagAgentMD)
+	if *agentMD != "none" {
+		t.Errorf("AgentMD from config: got %q, want none", *agentMD)
 	}
 }

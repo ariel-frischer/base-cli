@@ -98,12 +98,78 @@ base-cli init <project-name> [flags]
   --no-community        Skip community files (issue templates, PR template, etc.)
   --no-changelog        Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
 
+base-cli config init [--force]    Set up ~/.config/base-cli/config.yaml
+base-cli config show              Show resolved configuration
+base-cli config set <key> <value> Set a config value
+base-cli config edit              Open config in $EDITOR
+base-cli config path              Print config file path
 base-cli version [--plain]
 base-cli uninstall [--yes]
 base-cli completion [bash|zsh|fish|powershell]
 ```
 
 Interactive prompts for `--module` and `--description` if not provided (requires TTY).
+
+## Configuration
+
+Set user-level defaults so you don't have to pass the same flags every time:
+
+```bash
+# Create a config file at ~/.config/base-cli/config.yaml
+base-cli config init
+
+# Set defaults
+base-cli config set license apache2
+base-cli config set ci github
+base-cli config set layout cli
+base-cli config set no_goreleaser true
+base-cli config set agent_md none
+base-cli config set author "Your Name"
+
+# View current config
+base-cli config show
+
+# Edit in $EDITOR
+base-cli config edit
+
+# Print config path
+base-cli config path
+```
+
+CLI flags always override config values. For example, if your config has `license: apache2` but you run `base-cli init foo --license mit`, MIT wins.
+
+### Config file
+
+Located at `~/.config/base-cli/config.yaml`:
+
+```yaml
+# base-cli configuration — user-level defaults for "base-cli init"
+# All fields are optional. CLI flags always override these values.
+
+author: Your Name
+license: apache2        # mit, apache2, none
+ci: github              # github, gitlab, both
+layout: both            # both, cli, lib
+agent_md: both          # both, claude, agents, none
+no_git_init: false
+no_goreleaser: false
+no_community: false
+no_changelog: false
+```
+
+### Config keys
+
+| Key | Type | Values | Default |
+|-----|------|--------|---------|
+| `author` | string | any | git config user.name |
+| `license` | string | `mit`, `apache2`, `none` | `mit` |
+| `ci` | string | `github`, `gitlab`, `both` | `both` |
+| `layout` | string | `both`, `cli`, `lib` | `both` |
+| `agent_md` | string | `both`, `claude`, `agents`, `none` | `both` |
+| `no_git_init` | bool | `true`, `false` | `false` |
+| `no_goreleaser` | bool | `true`, `false` | `false` |
+| `no_community` | bool | `true`, `false` | `false` |
+| `no_changelog` | bool | `true`, `false` | `false` |
 
 ### Layout Options
 
