@@ -36,6 +36,9 @@ Thumbs.db
 CLAUDE.md
 TODO.md
 
+# Internal docs (not for distribution)
+docs/internal/
+
 # Agent Skills (npx skills add)
 .agents/
 skills-lock.json
