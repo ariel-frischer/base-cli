@@ -19,6 +19,8 @@ func resetInitFlags() {
 	flagLayout = "both"
 	flagDir = ""
 	flagNoGitInit = false
+	flagNoGoreleaser = false
+	flagNoCommunity = false
 }
 
 func TestRunInitNonInteractive(t *testing.T) {

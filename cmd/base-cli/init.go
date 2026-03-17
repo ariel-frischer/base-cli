@@ -14,15 +14,16 @@ import (
 )
 
 var (
-	flagModule      string
-	flagDescription string
-	flagAuthor      string
-	flagLicense     string
-	flagCI          string
-	flagLayout      string
-	flagDir         string
+	flagModule       string
+	flagDescription  string
+	flagAuthor       string
+	flagLicense      string
+	flagCI           string
+	flagLayout       string
+	flagDir          string
 	flagNoGitInit    bool
 	flagNoGoreleaser bool
+	flagNoCommunity  bool
 )
 
 var initCmd = &cobra.Command{
@@ -43,6 +44,7 @@ func init() {
 	initCmd.Flags().StringVar(&flagDir, "dir", "", "Output directory (default: ./<name>)")
 	initCmd.Flags().BoolVar(&flagNoGitInit, "no-git-init", false, "Skip git init")
 	initCmd.Flags().BoolVar(&flagNoGoreleaser, "no-goreleaser", false, "Skip goreleaser config and release workflow")
+	initCmd.Flags().BoolVar(&flagNoCommunity, "no-community", false, "Skip community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)")
 }
 
 func runInit(cmd *cobra.Command, args []string) error {
@@ -152,6 +154,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		HasLib:      hasLib,
 		LibPackage:  libPackage,
 		Goreleaser:  !flagNoGoreleaser,
+		Community:   !flagNoCommunity,
 	}
 
 	// Check if directory already exists and is non-empty

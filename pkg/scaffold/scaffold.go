@@ -33,6 +33,7 @@ type Config struct {
 	HasLib      bool   // true for "both" and "lib"
 	LibPackage  string // Go-safe package name (hyphens stripped)
 	Goreleaser  bool   // Include goreleaser config and release workflow
+	Community   bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -114,6 +115,11 @@ func skipDir(relPath string, cfg Config) error {
 		return fs.SkipDir
 	}
 
+	// Community files: skip issue templates dir
+	if !cfg.Community && matchesPrefix(relPath, "github/ISSUE_TEMPLATE") {
+		return fs.SkipDir
+	}
+
 	// Layout filtering
 	if !cfg.HasCLI {
 		if matchesPrefix(relPath, "cmd") || matchesPrefix(relPath, "internal") {
@@ -144,6 +150,15 @@ func skipFile(relPath string, cfg Config) bool {
 	if !cfg.HasCLI {
 		switch relPath {
 		case "install.sh.tmpl", "uninstall.sh.tmpl", "goreleaser.yaml.tmpl":
+			return true
+		}
+	}
+
+	// Community files
+	if !cfg.Community {
+		switch relPath {
+		case "CONTRIBUTING.md.tmpl", "CODE_OF_CONDUCT.md.tmpl",
+			"github/pull_request_template.md.tmpl":
 			return true
 		}
 	}

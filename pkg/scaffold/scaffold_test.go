@@ -27,6 +27,7 @@ func bothConfig(name string) Config {
 		HasLib:      true,
 		LibPackage:  strings.ReplaceAll(name, "-", ""),
 		Goreleaser:  true,
+		Community:   true,
 	}
 }
 
@@ -59,6 +60,11 @@ func TestGenerate(t *testing.T) {
 		"scripts/release.sh",
 		".github/workflows/ci.yml",
 		".github/workflows/release.yml",
+		".github/ISSUE_TEMPLATE/bug_report.md",
+		".github/ISSUE_TEMPLATE/feature_request.md",
+		".github/pull_request_template.md",
+		"CONTRIBUTING.md",
+		"CODE_OF_CONDUCT.md",
 		"CHANGELOG.yaml",
 		".chlog.yaml",
 	}
@@ -235,6 +241,35 @@ func TestGenerateNoGoreleaser(t *testing.T) {
 	// CI workflow should still exist
 	if _, err := os.Stat(filepath.Join(destDir, ".github/workflows/ci.yml")); os.IsNotExist(err) {
 		t.Error("ci.yml should still exist when Goreleaser=false")
+	}
+}
+
+func TestGenerateNoCommunity(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.Community = false
+
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	shouldNotExist := []string{
+		".github/ISSUE_TEMPLATE/bug_report.md",
+		".github/ISSUE_TEMPLATE/feature_request.md",
+		".github/pull_request_template.md",
+		"CONTRIBUTING.md",
+		"CODE_OF_CONDUCT.md",
+	}
+	for _, f := range shouldNotExist {
+		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
+			t.Errorf("%s should not exist when Community=false", f)
+		}
+	}
+
+	// CI workflow should still exist
+	if _, err := os.Stat(filepath.Join(destDir, ".github/workflows/ci.yml")); os.IsNotExist(err) {
+		t.Error("ci.yml should still exist when Community=false")
 	}
 }
 

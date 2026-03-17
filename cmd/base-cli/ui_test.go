@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/fatih/color"
@@ -23,4 +26,38 @@ func TestFileRef(t *testing.T) {
 	if got != "path/to/file" {
 		t.Errorf("fileRef(%q) = %q, want %q", "path/to/file", got, "path/to/file")
 	}
+}
+
+func TestSuccess(t *testing.T) {
+	out := captureStdoutUI(t, func() {
+		success("done %s", "ok")
+	})
+	if !strings.Contains(out, "done ok") {
+		t.Errorf("success() output = %q, want to contain %q", out, "done ok")
+	}
+}
+
+func TestWarn(t *testing.T) {
+	out := captureStdoutUI(t, func() {
+		warn("caution %d", 42)
+	})
+	if !strings.Contains(out, "caution 42") {
+		t.Errorf("warn() output = %q, want to contain %q", out, "caution 42")
+	}
+}
+
+func captureStdoutUI(t *testing.T, fn func()) string {
+	t.Helper()
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	old := os.Stdout
+	os.Stdout = w
+	fn()
+	w.Close()
+	os.Stdout = old
+	var buf bytes.Buffer
+	buf.ReadFrom(r)
+	return buf.String()
 }
