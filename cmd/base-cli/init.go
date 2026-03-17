@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ariel-frischer/base-cli/internal/config"
 	"github.com/ariel-frischer/base-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 )
@@ -54,6 +55,14 @@ func init() {
 func runInit(cmd *cobra.Command, args []string) error {
 	projectName := args[0]
 	isTTY := isTerminal()
+
+	// Load user-level config defaults.
+	userCfg, err := config.Load(config.DefaultPath())
+	if err != nil {
+		warn("failed to load config: %v", err)
+		userCfg = &config.Config{}
+	}
+	applyConfigDefaults(cmd, userCfg)
 
 	// Resolve author
 	author := flagAuthor
@@ -276,4 +285,31 @@ func runInDir(dir string, name string, args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+// applyConfigDefaults sets flag values from user config when the flag was not
+// explicitly provided on the command line. CLI flags always take precedence.
+func applyConfigDefaults(cmd *cobra.Command, cfg *config.Config) {
+	setIfUnchanged := func(name, val string) {
+		if val != "" && !cmd.Flags().Changed(name) {
+			_ = cmd.Flags().Set(name, val)
+		}
+	}
+
+	setIfUnchanged("author", cfg.Author)
+	setIfUnchanged("license", cfg.License)
+	setIfUnchanged("ci", cfg.CI)
+	setIfUnchanged("layout", cfg.Layout)
+	setIfUnchanged("agent-md", cfg.AgentMD)
+
+	setBoolIfUnchanged := func(name string, ptr *bool) {
+		if ptr != nil && !cmd.Flags().Changed(name) {
+			_ = cmd.Flags().Set(name, fmt.Sprintf("%v", *ptr))
+		}
+	}
+
+	setBoolIfUnchanged("no-git-init", cfg.NoGitInit)
+	setBoolIfUnchanged("no-goreleaser", cfg.NoGoreleaser)
+	setBoolIfUnchanged("no-community", cfg.NoCommunity)
+	setBoolIfUnchanged("no-changelog", cfg.NoChangelog)
 }

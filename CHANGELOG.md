@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - SKILL.md for AI agent integration
 - Installation instructions in README
 - `--no-changelog` flag to skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml) and CI changelog gate
+- `--agent-md` flag to control AI agent doc generation (both, claude, agents, none)
+- AGENTS.md template with module path, architecture, dependencies, and file conventions
 
 ## [0.0.1] - 2026-03-16
 

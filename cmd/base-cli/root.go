@@ -36,4 +36,5 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(uninstallCmd)
+	rootCmd.AddCommand(configCmd)
 }
