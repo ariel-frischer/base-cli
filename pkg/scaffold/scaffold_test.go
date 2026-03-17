@@ -1,6 +1,7 @@
 package scaffold
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -287,6 +288,202 @@ func TestGenerateShellScriptsExecutable(t *testing.T) {
 		if info.Mode()&0o111 == 0 {
 			t.Errorf("%s should be executable, got mode %v", s, info.Mode())
 		}
+	}
+}
+
+func TestGenerateBothCI(t *testing.T) {
+	cfg := bothConfig("dual-ci")
+	cfg.CIGitHub = true
+	cfg.CIGitLab = true
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(destDir, ".github/workflows/ci.yml")); os.IsNotExist(err) {
+		t.Error("GitHub CI should exist when CIGitHub=true")
+	}
+	if _, err := os.Stat(filepath.Join(destDir, ".gitlab-ci.yml")); os.IsNotExist(err) {
+		t.Error("GitLab CI should exist when CIGitLab=true")
+	}
+}
+
+func TestGenerateNoCI(t *testing.T) {
+	cfg := bothConfig("no-ci")
+	cfg.CIGitHub = false
+	cfg.CIGitLab = false
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(destDir, ".github")); err == nil {
+		t.Error(".github/ should not exist when CIGitHub=false")
+	}
+	if _, err := os.Stat(filepath.Join(destDir, ".gitlab-ci.yml")); err == nil {
+		t.Error(".gitlab-ci.yml should not exist when CIGitLab=false")
+	}
+}
+
+func TestGenerateReadOnlyDestDir(t *testing.T) {
+	cfg := bothConfig("fail")
+	destDir := filepath.Join(t.TempDir(), "readonly")
+	os.MkdirAll(destDir, 0o555)
+	defer os.Chmod(destDir, 0o755) // cleanup
+
+	err := Generate(cfg, destDir)
+	if err == nil {
+		t.Error("expected error when writing to read-only directory")
+	}
+}
+
+func TestSkipDir(t *testing.T) {
+	tests := map[string]struct {
+		relPath string
+		cfg     Config
+		want    error
+	}{
+		"github skipped": {
+			relPath: "github/workflows",
+			cfg:     Config{CIGitHub: false},
+			want:    fs.SkipDir,
+		},
+		"github kept": {
+			relPath: "github/workflows",
+			cfg:     Config{CIGitHub: true},
+			want:    nil,
+		},
+		"gitlab skipped": {
+			relPath: "gitlab",
+			cfg:     Config{CIGitLab: false},
+			want:    fs.SkipDir,
+		},
+		"gitlab kept": {
+			relPath: "gitlab",
+			cfg:     Config{CIGitLab: true},
+			want:    nil,
+		},
+		"cmd skipped for lib": {
+			relPath: "cmd/myapp",
+			cfg:     Config{HasCLI: false, HasLib: true},
+			want:    fs.SkipDir,
+		},
+		"internal skipped for lib": {
+			relPath: "internal/version",
+			cfg:     Config{HasCLI: false, HasLib: true},
+			want:    fs.SkipDir,
+		},
+		"scripts skipped for lib": {
+			relPath: "scripts",
+			cfg:     Config{HasCLI: false, HasLib: true},
+			want:    fs.SkipDir,
+		},
+		"pkg skipped for cli": {
+			relPath: "pkg/mylib",
+			cfg:     Config{HasCLI: true, HasLib: false},
+			want:    fs.SkipDir,
+		},
+		"pkg kept for lib": {
+			relPath: "pkg/mylib",
+			cfg:     Config{HasCLI: false, HasLib: true},
+			want:    nil,
+		},
+		"unrelated dir kept": {
+			relPath: "docs",
+			cfg:     Config{},
+			want:    nil,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := skipDir(tt.relPath, tt.cfg)
+			if got != tt.want {
+				t.Errorf("skipDir(%q) = %v, want %v", tt.relPath, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSkipFile(t *testing.T) {
+	tests := map[string]struct {
+		relPath string
+		cfg     Config
+		want    bool
+	}{
+		"mit license kept": {
+			relPath: "LICENSE_mit.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true},
+			want:    false,
+		},
+		"mit license skipped for apache": {
+			relPath: "LICENSE_mit.tmpl",
+			cfg:     Config{License: "apache2", HasCLI: true},
+			want:    true,
+		},
+		"apache license skipped for mit": {
+			relPath: "LICENSE_apache2.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true},
+			want:    true,
+		},
+		"apache license kept": {
+			relPath: "LICENSE_apache2.tmpl",
+			cfg:     Config{License: "apache2", HasCLI: true},
+			want:    false,
+		},
+		"install.sh skipped for lib": {
+			relPath: "install.sh.tmpl",
+			cfg:     Config{HasCLI: false},
+			want:    true,
+		},
+		"goreleaser skipped for lib": {
+			relPath: "goreleaser.yaml.tmpl",
+			cfg:     Config{HasCLI: false},
+			want:    true,
+		},
+		"uninstall.sh skipped for lib": {
+			relPath: "uninstall.sh.tmpl",
+			cfg:     Config{HasCLI: false},
+			want:    true,
+		},
+		"regular file kept": {
+			relPath: "Makefile.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true},
+			want:    false,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := skipFile(tt.relPath, tt.cfg)
+			if got != tt.want {
+				t.Errorf("skipFile(%q) = %v, want %v", tt.relPath, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMatchesPrefix(t *testing.T) {
+	tests := map[string]struct {
+		relPath string
+		prefix  string
+		want    bool
+	}{
+		"exact match":       {"github", "github", true},
+		"prefix with slash": {"github/workflows", "github", true},
+		"no match":          {"gitlab", "github", false},
+		"partial no match":  {"githubx", "github", false},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := matchesPrefix(tt.relPath, tt.prefix)
+			if got != tt.want {
+				t.Errorf("matchesPrefix(%q, %q) = %v, want %v", tt.relPath, tt.prefix, got, tt.want)
+			}
+		})
 	}
 }
 
