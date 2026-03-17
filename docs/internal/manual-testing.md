@@ -1,5 +1,7 @@
 # Manual Testing Guide
 
+**Last verified:** 2026-03-17 @ commit `6ba62cf` — all tests passing
+
 All commands run from repo root using `go run ./cmd/base-cli/`.
 Test outputs go to `/tmp/base-cli-test/`.
 
@@ -8,6 +10,11 @@ Test outputs go to `/tmp/base-cli-test/`.
 ```bash
 rm -rf /tmp/base-cli-test && mkdir -p /tmp/base-cli-test
 ```
+
+**Key behaviors to know:**
+- `--dir` is the direct output path, not a parent. Files land in `<dir>/`, not `<dir>/<name>/`.
+- In non-interactive mode (no TTY), `--module` and `--description` are required. Interactive mode prompts for them with defaults.
+- `--agent-md` validation runs after `--module`/`--description` checks.
 
 ## 1. version
 
@@ -64,22 +71,25 @@ go run ./cmd/base-cli/ config set bogus_key value
 
 ## 3. init — layout variations
 
+Note: in a shell (no TTY), pass `--module` and `--description` to skip prompts.
+
 ```bash
-# Default (both layout)
+# Default (both layout) — interactive prompts for module + description
 go run ./cmd/base-cli/ init myproject --dir /tmp/base-cli-test/default
-ls /tmp/base-cli-test/default/myproject/cmd /tmp/base-cli-test/default/myproject/pkg
+# Files land directly in /tmp/base-cli-test/default/, not in a myproject/ subdir
+ls /tmp/base-cli-test/default/cmd /tmp/base-cli-test/default/pkg
 
 # CLI only
-go run ./cmd/base-cli/ init mycli --dir /tmp/base-cli-test/cli --layout cli
-ls /tmp/base-cli-test/cli/mycli/cmd /tmp/base-cli-test/cli/mycli/internal
-# Should NOT have pkg/
-ls /tmp/base-cli-test/cli/mycli/pkg 2>&1 | grep -q "No such file" && echo "PASS: no pkg/" || echo "FAIL"
+go run ./cmd/base-cli/ init mycli --dir /tmp/base-cli-test/cli --layout cli \
+  --module github.com/me/mycli --description "my cli"
+ls /tmp/base-cli-test/cli/cmd/ /tmp/base-cli-test/cli/internal/
+ls /tmp/base-cli-test/cli/pkg/ 2>&1 | grep -q "No such file" && echo "PASS: no pkg/" || echo "FAIL"
 
 # Lib only
-go run ./cmd/base-cli/ init mylib --dir /tmp/base-cli-test/lib --layout lib
-ls /tmp/base-cli-test/lib/mylib/pkg
-# Should NOT have cmd/
-ls /tmp/base-cli-test/lib/mylib/cmd 2>&1 | grep -q "No such file" && echo "PASS: no cmd/" || echo "FAIL"
+go run ./cmd/base-cli/ init mylib --dir /tmp/base-cli-test/lib --layout lib \
+  --module github.com/me/mylib --description "my lib"
+ls /tmp/base-cli-test/lib/pkg/
+ls /tmp/base-cli-test/lib/cmd/ 2>&1 | grep -q "No such file" && echo "PASS: no cmd/" || echo "FAIL"
 ```
 
 ## 4. init — CI variations
@@ -178,14 +188,22 @@ cd /tmp/base-cli-test/lib/mylib && go build ./... && echo "PASS: builds" || echo
 ## 9. init — edge cases
 
 ```bash
-# Project already exists (should error)
-go run ./cmd/base-cli/ init myproject --dir /tmp/base-cli-test/default
+# Dir already exists and is not empty (should error)
+go run ./cmd/base-cli/ init myproject --dir /tmp/base-cli-test/default \
+  --module github.com/me/myproject --description "test"
+# Expected: "directory ... already exists and is not empty"
 
-# No project name
+# No project name (should error)
 go run ./cmd/base-cli/ init
+# Expected: "accepts 1 arg(s), received 0"
+
+# Non-interactive missing --module (should error)
+go run ./cmd/base-cli/ init myproject --dir /tmp/base-cli-test/edge --description "test"
+# Expected: "--module is required in non-interactive mode"
 
 # --no-color flag
-go run ./cmd/base-cli/ init proj-nocolor --dir /tmp/base-cli-test/edge --no-color
+go run ./cmd/base-cli/ init proj-nocolor --dir /tmp/base-cli-test/edge --no-color \
+  --module github.com/me/proj-nocolor --description "test"
 ```
 
 ## 10. completion

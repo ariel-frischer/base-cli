@@ -41,7 +41,7 @@ Show
 # --- Demo starts ---
 
 # 1. Init a new project
-Type "base-cli init my-app --layout cli --no-community --no-changelog"
+Type "base-cli init my-app --module github.com/demo/my-app -d 'My Go CLI app'"
 Enter
 Sleep 3s
 

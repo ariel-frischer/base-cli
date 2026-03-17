@@ -87,7 +87,7 @@ Every generated project includes:
 ```bash
 base-cli init <project-name> [flags]
   --module <path>       Go module path (default: github.com/<git-user>/<name>)
-  --description <text>  One-line project description
+  -d, --description <text>  One-line project description
   --author <name>       Author name (default: git config user.name)
   --license mit|apache2|none      (default: mit)
   --ci github|gitlab|both         (default: both)
@@ -185,12 +185,12 @@ no_changelog: false
 # CLI + library (default)
 base-cli init my-tool \
   --module github.com/alice/my-tool \
-  --description "A cool tool"
+  -d "A cool tool"
 
 # Pure library
 base-cli init my-lib \
   --module github.com/alice/my-lib \
-  --description "A utility library" \
+  -d "A utility library" \
   --layout lib
 
 # CLI only

@@ -15,7 +15,6 @@ import (
 )
 
 var (
-	flagModule       string
 	flagDescription  string
 	flagAuthor       string
 	flagLicense      string
@@ -30,16 +29,15 @@ var (
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init <project-name>",
+	Use:   "init <project-name> [module]",
 	Short: "Generate a new Go project",
 	Long:  "Scaffold a complete, ready-to-build Go project with best practices.\n\nLayout options:\n  both   CLI + library (cmd/ + pkg/) — default\n  cli    CLI only (cmd/ + internal/)\n  lib    Library only (pkg/)",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.RangeArgs(1, 2),
 	RunE:  runInit,
 }
 
 func init() {
-	initCmd.Flags().StringVar(&flagModule, "module", "", "Go module path (default: github.com/<git-user>/<name>)")
-	initCmd.Flags().StringVar(&flagDescription, "description", "", "One-line project description")
+	initCmd.Flags().StringVarP(&flagDescription, "description", "d", "", "One-line project description")
 	initCmd.Flags().StringVar(&flagAuthor, "author", "", "Author name (default: git config user.name)")
 	initCmd.Flags().StringVar(&flagLicense, "license", "mit", "License type: mit, apache2, none")
 	initCmd.Flags().StringVar(&flagCI, "ci", "both", "CI provider: github, gitlab, both")
@@ -78,14 +76,14 @@ func runInit(cmd *cobra.Command, args []string) error {
 	}
 
 	// Resolve module path
-	modulePath := flagModule
-	if modulePath == "" {
-		if isTTY {
-			defaultModule := fmt.Sprintf("github.com/%s/%s", gitUser, projectName)
-			modulePath = prompt("Go module path", defaultModule)
-		} else {
-			return fmt.Errorf("--module is required in non-interactive mode")
-		}
+	var modulePath string
+	if len(args) >= 2 {
+		modulePath = args[1]
+	} else if isTTY {
+		defaultModule := fmt.Sprintf("github.com/%s/%s", gitUser, projectName)
+		modulePath = prompt("Go module path", defaultModule)
+	} else {
+		return fmt.Errorf("module path is required in non-interactive mode: base-cli init <name> <module>")
 	}
 
 	// Resolve description
