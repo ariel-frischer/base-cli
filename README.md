@@ -39,6 +39,20 @@ import "github.com/ariel-frischer/base-cli/pkg/scaffold"
 
 ## Quickstart
 
+**1. Install the skill** so your coding agent knows how to use base-cli:
+
+```bash
+npx skills add ariel-frischer/base-cli
+```
+
+**2. Ask your agent** to scaffold whatever you need:
+
+> "Use base-cli to generate a Go CLI project called my-tool that does X"
+
+Your agent will pick the right flags, layout, and options for you.
+
+**Or run it directly:**
+
 ```bash
 base-cli init my-project
 cd my-project
@@ -50,7 +64,7 @@ make build
 
 Every generated project includes:
 
-- **Flexible layout** — CLI + library (default), CLI only, or library only
+- **Flexible layout** — Choose `--layout both` (default) for a CLI that's also importable as a Go library, `cli` for a standalone binary, or `lib` for a pure library with no CLI
 - **Cobra CLI** with root, version, and completion commands (cli/both layouts)
 - **Public `pkg/` library** importable by other Go projects (lib/both layouts)
 - **Version info** via ldflags (version, commit, build date)
@@ -60,7 +74,11 @@ Every generated project includes:
 - **Shell installer** (`install.sh`) with checksum verification
 - **Uninstaller** (`uninstall.sh`)
 - **Release script** with pre-flight checks
-- **CHANGELOG.yaml** + `.chlog.yaml` (ready for [chlog](https://github.com/ariel-frischer/chlog))
+- **CHANGELOG.yaml** + **CHANGELOG.md** + `.chlog.yaml` — optional, powered by [chlog](https://github.com/ariel-frischer/chlog) (skip with `--no-changelog`)
+- **Changelog CI gate** — validates changelog in CI when enabled (graceful skip if chlog not installed)
+- **TODO.md** with MVP, stretch goals, and tech debt sections
+- **testdata/** directory with sample fixture in `pkg/` (encourages fixture-based testing)
+- **assets/** directory for demo content (GIFs, screenshots, etc.)
 - **AI Agent Skill** — `.skills/default/SKILL.md` + README install instructions ([Agent Skills standard](https://agentskills.io))
 - **README.md**, **CLAUDE.md**, **LICENSE**, **.gitignore**
 
@@ -72,10 +90,13 @@ base-cli init <project-name> [flags]
   --description <text>  One-line project description
   --author <name>       Author name (default: git config user.name)
   --license mit|apache2|none      (default: mit)
-  --ci github|gitlab|both         (default: github)
+  --ci github|gitlab|both         (default: both)
   --layout both|cli|lib           (default: both)
   --dir <path>          Output directory (default: ./<name>)
   --no-git-init         Skip git init
+  --no-goreleaser       Skip goreleaser config and release workflow
+  --no-community        Skip community files (issue templates, PR template, etc.)
+  --no-changelog        Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
 
 base-cli version [--plain]
 base-cli uninstall [--yes]
@@ -123,9 +144,11 @@ my-project/
     main.go, root.go, version.go, ui.go
   pkg/myproject/
     doc.go
+    testdata/sample.yaml
   internal/version/
     version.go, version_test.go
   scripts/release.sh
+  assets/.gitkeep
   .github/workflows/ci.yml     # if --ci github|both
   .gitlab-ci.yml                # if --ci gitlab|both
   .skills/default/SKILL.md
@@ -137,9 +160,11 @@ my-project/
   go.mod
   README.md
   CLAUDE.md
+  TODO.md
   LICENSE
-  CHANGELOG.yaml
-  .chlog.yaml
+  CHANGELOG.yaml                # if --no-changelog not set
+  CHANGELOG.md                  # if --no-changelog not set
+  .chlog.yaml                   # if --no-changelog not set
 ```
 
 **`--layout lib`** generates only:
@@ -148,6 +173,8 @@ my-project/
 my-lib/
   pkg/mylib/
     doc.go
+    testdata/sample.yaml
+  assets/.gitkeep
   .skills/default/SKILL.md
   .github/workflows/ci.yml
   Makefile                      # test, lint, format only
@@ -155,9 +182,11 @@ my-lib/
   .gitignore
   README.md
   CLAUDE.md
+  TODO.md
   LICENSE
-  CHANGELOG.yaml
-  .chlog.yaml
+  CHANGELOG.yaml                # if --no-changelog not set
+  CHANGELOG.md                  # if --no-changelog not set
+  .chlog.yaml                   # if --no-changelog not set
 ```
 
 ### AI Agent Skill

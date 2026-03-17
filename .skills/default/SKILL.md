@@ -33,9 +33,12 @@ base-cli init <name> --module <path>    # Custom Go module path
 base-cli init <name> --description <t>  # One-line project description
 base-cli init <name> --author <name>    # Author name (default: git user.name)
 base-cli init <name> --license mit      # License: mit|apache2|none (default: mit)
-base-cli init <name> --ci github        # CI: github|gitlab|both (default: github)
+base-cli init <name> --ci both          # CI: github|gitlab|both (default: both)
 base-cli init <name> --dir <path>       # Output directory (default: ./<name>)
 base-cli init <name> --no-git-init      # Skip git init
+base-cli init <name> --no-goreleaser   # Skip goreleaser config and release workflow
+base-cli init <name> --no-community    # Skip community files (issue templates, etc.)
+base-cli init <name> --no-changelog    # Skip changelog files (CHANGELOG.yaml, .chlog.yaml)
 base-cli version                        # Show version info
 base-cli version --plain                # Plain version string
 base-cli uninstall                      # Remove base-cli from system
@@ -55,11 +58,11 @@ Interactive prompts for `--module` and `--description` if not provided (requires
 
 ## Generated Project Structure
 
-Every project includes: Makefile, goreleaser config, CI pipeline, shell installer/uninstaller, release script, CHANGELOG.yaml, .chlog.yaml, README.md, CLAUDE.md, LICENSE, .gitignore.
+Every project includes: Makefile, goreleaser config, CI pipelines (GitHub Actions + GitLab CI by default), shell installer/uninstaller, release script, TODO.md, assets/ directory, README.md, CLAUDE.md, LICENSE, .gitignore. Optional: CHANGELOG.yaml + CHANGELOG.md + .chlog.yaml + changelog CI gate (powered by [chlog](https://github.com/ariel-frischer/chlog), skip with `--no-changelog`).
 
 CLI layouts add: Cobra CLI with root, version, and completion commands, version info via ldflags.
 
-Library layouts add: public `pkg/` importable by other Go projects.
+Library layouts add: public `pkg/` importable by other Go projects, with `testdata/` directory and sample fixture.
 
 ## Go Library
 

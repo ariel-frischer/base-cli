@@ -24,6 +24,7 @@ var (
 	flagNoGitInit    bool
 	flagNoGoreleaser bool
 	flagNoCommunity  bool
+	flagNoChangelog  bool
 )
 
 var initCmd = &cobra.Command{
@@ -39,12 +40,13 @@ func init() {
 	initCmd.Flags().StringVar(&flagDescription, "description", "", "One-line project description")
 	initCmd.Flags().StringVar(&flagAuthor, "author", "", "Author name (default: git config user.name)")
 	initCmd.Flags().StringVar(&flagLicense, "license", "mit", "License type: mit, apache2, none")
-	initCmd.Flags().StringVar(&flagCI, "ci", "github", "CI provider: github, gitlab, both")
+	initCmd.Flags().StringVar(&flagCI, "ci", "both", "CI provider: github, gitlab, both")
 	initCmd.Flags().StringVar(&flagLayout, "layout", "both", "Project layout: both (cli+lib), cli, lib")
 	initCmd.Flags().StringVar(&flagDir, "dir", "", "Output directory (default: ./<name>)")
 	initCmd.Flags().BoolVar(&flagNoGitInit, "no-git-init", false, "Skip git init")
 	initCmd.Flags().BoolVar(&flagNoGoreleaser, "no-goreleaser", false, "Skip goreleaser config and release workflow")
 	initCmd.Flags().BoolVar(&flagNoCommunity, "no-community", false, "Skip community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)")
+	initCmd.Flags().BoolVar(&flagNoChangelog, "no-changelog", false, "Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml, CI changelog gate)")
 }
 
 func runInit(cmd *cobra.Command, args []string) error {
@@ -155,6 +157,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		LibPackage:  libPackage,
 		Goreleaser:  !flagNoGoreleaser,
 		Community:   !flagNoCommunity,
+		Changelog:   !flagNoChangelog,
 	}
 
 	// Check if directory already exists and is non-empty

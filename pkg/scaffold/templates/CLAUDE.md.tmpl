@@ -24,7 +24,9 @@ internal/version/    # Version info (ldflags)
 [%- end %]
 [%- if .HasLib %]
 pkg/[% .LibPackage %]/      # Public library package
+  testdata/          # Test fixtures
 [%- end %]
+assets/              # Demo content (GIFs, screenshots)
 ```
 
 ## Coding Standards

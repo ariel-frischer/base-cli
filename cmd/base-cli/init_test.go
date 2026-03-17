@@ -15,12 +15,13 @@ func resetInitFlags() {
 	flagDescription = ""
 	flagAuthor = ""
 	flagLicense = "mit"
-	flagCI = "github"
+	flagCI = "both"
 	flagLayout = "both"
 	flagDir = ""
 	flagNoGitInit = false
 	flagNoGoreleaser = false
 	flagNoCommunity = false
+	flagNoChangelog = false
 }
 
 func TestRunInitNonInteractive(t *testing.T) {

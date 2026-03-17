@@ -34,6 +34,7 @@ type Config struct {
 	LibPackage  string // Go-safe package name (hyphens stripped)
 	Goreleaser  bool   // Include goreleaser config and release workflow
 	Community   bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)
+	Changelog   bool   // Include changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -163,6 +164,14 @@ func skipFile(relPath string, cfg Config) bool {
 		}
 	}
 
+	// Changelog-related files
+	if !cfg.Changelog {
+		switch relPath {
+		case "chlog.yaml.tmpl", "chlog-config.yaml.tmpl", "CHANGELOG.md.tmpl":
+			return true
+		}
+	}
+
 	// Goreleaser-related files
 	if !cfg.Goreleaser {
 		switch relPath {
@@ -186,6 +195,11 @@ func resolveOutputPath(relPath, binaryName, libPackage, license string) string {
 
 	out = strings.ReplaceAll(out, "{{BinaryName}}", binaryName)
 	out = strings.ReplaceAll(out, "{{LibPackage}}", libPackage)
+
+	// Convert gitkeep → .gitkeep (used for keeping empty directories in git)
+	if filepath.Base(out) == "gitkeep" {
+		out = filepath.Join(filepath.Dir(out), ".gitkeep")
+	}
 
 	switch {
 	case strings.HasPrefix(out, "skills/"):

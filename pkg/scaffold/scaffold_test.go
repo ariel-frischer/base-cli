@@ -28,6 +28,7 @@ func bothConfig(name string) Config {
 		LibPackage:  strings.ReplaceAll(name, "-", ""),
 		Goreleaser:  true,
 		Community:   true,
+		Changelog:   true,
 	}
 }
 
@@ -66,7 +67,11 @@ func TestGenerate(t *testing.T) {
 		"CONTRIBUTING.md",
 		"CODE_OF_CONDUCT.md",
 		"CHANGELOG.yaml",
+		"CHANGELOG.md",
 		".chlog.yaml",
+		"TODO.md",
+		"assets/.gitkeep",
+		"pkg/testproject/testdata/sample.yaml",
 	}
 
 	for _, f := range expectedFiles {
@@ -179,6 +184,7 @@ func TestGenerateLayoutLib(t *testing.T) {
 	// Library files should exist
 	libFiles := []string{
 		"pkg/mylib/doc.go",
+		"pkg/mylib/testdata/sample.yaml",
 		"go.mod",
 		"Makefile",
 		"README.md",
@@ -273,6 +279,33 @@ func TestGenerateNoCommunity(t *testing.T) {
 	}
 }
 
+func TestGenerateNoChangelog(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.Changelog = false
+
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	shouldNotExist := []string{
+		"CHANGELOG.yaml",
+		"CHANGELOG.md",
+		".chlog.yaml",
+	}
+	for _, f := range shouldNotExist {
+		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
+			t.Errorf("%s should not exist when Changelog=false", f)
+		}
+	}
+
+	// CI workflow should still exist
+	if _, err := os.Stat(filepath.Join(destDir, ".github/workflows/ci.yml")); os.IsNotExist(err) {
+		t.Error("ci.yml should still exist when Changelog=false")
+	}
+}
+
 func TestResolveOutputPath(t *testing.T) {
 	tests := map[string]struct {
 		relPath    string
@@ -292,6 +325,10 @@ func TestResolveOutputPath(t *testing.T) {
 		"changelog yaml": {"chlog.yaml.tmpl", "foo", "foo", "mit", "CHANGELOG.yaml"},
 		"chlog config":   {"chlog-config.yaml.tmpl", "foo", "foo", "mit", ".chlog.yaml"},
 		"release yml":    {"github/workflows/release.yml.tmpl", "foo", "foo", "mit", ".github/workflows/release.yml"},
+		"assets gitkeep": {"assets/gitkeep.tmpl", "foo", "foo", "mit", "assets/.gitkeep"},
+		"testdata":       {"pkg/{{LibPackage}}/testdata/sample.yaml.tmpl", "foo", "foo", "mit", "pkg/foo/testdata/sample.yaml"},
+		"changelog md":   {"CHANGELOG.md.tmpl", "foo", "foo", "mit", "CHANGELOG.md"},
+		"todo md":        {"TODO.md.tmpl", "foo", "foo", "mit", "TODO.md"},
 	}
 
 	for name, tt := range tests {
@@ -482,6 +519,26 @@ func TestSkipFile(t *testing.T) {
 			relPath: "uninstall.sh.tmpl",
 			cfg:     Config{HasCLI: false},
 			want:    true,
+		},
+		"changelog yaml skipped": {
+			relPath: "chlog.yaml.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, Changelog: false},
+			want:    true,
+		},
+		"changelog config skipped": {
+			relPath: "chlog-config.yaml.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, Changelog: false},
+			want:    true,
+		},
+		"changelog md skipped": {
+			relPath: "CHANGELOG.md.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, Changelog: false},
+			want:    true,
+		},
+		"changelog yaml kept": {
+			relPath: "chlog.yaml.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, Changelog: true},
+			want:    false,
 		},
 		"regular file kept": {
 			relPath: "Makefile.tmpl",

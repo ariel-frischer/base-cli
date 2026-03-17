@@ -33,6 +33,23 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
+[% if .Changelog %]
+  changelog-check:
+    name: Changelog Check
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate changelog
+        run: |
+          if command -v chlog >/dev/null 2>&1; then
+            chlog check
+          else
+            echo "chlog not installed, skipping changelog validation"
+          fi
+
+[% end %]
   test:
     name: Test
     runs-on: ubuntu-latest

@@ -38,6 +38,13 @@ import "[% .ModulePath %]/pkg/[% .LibPackage %]"
 ```
 [%- end %]
 
+## Project Structure
+
+Includes: Makefile, CI pipelines, CHANGELOG.yaml + CHANGELOG.md, TODO.md, assets/ directory, .gitignore, LICENSE.
+[%- if .HasLib %]
+Test fixtures live in `pkg/[% .LibPackage %]/testdata/`.
+[%- end %]
+
 ## Development
 
 ```bash

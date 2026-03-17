@@ -1,7 +1,8 @@
 stages:
   - lint
   - test
-  - build
+  - build[% if .Goreleaser %]
+  - release[% end %]
 
 variables:
   GOFLAGS: "-buildvcs=false"
@@ -22,6 +23,21 @@ lint:
     - test -z "$(gofmt -s -l .)"
     - go vet ./...
 
+[% if .Changelog %]
+changelog-check:
+  stage: lint
+  image: golang:1.25
+  extends: .go-cache
+  script:
+    - |
+      if command -v chlog >/dev/null 2>&1; then
+        chlog check
+      else
+        echo "chlog not installed, skipping changelog validation"
+      fi
+  allow_failure: true
+
+[% end %]
 test:
   stage: test
   image: golang:1.25
@@ -46,3 +62,25 @@ build:
     paths:
       - bin/
     expire_in: 7 days
+[% if .Goreleaser %]
+release:
+  stage: release
+  image: golang:1.25
+  extends: .go-cache
+  only:
+    - tags
+  variables:
+    GITLAB_TOKEN: $CI_JOB_TOKEN
+  script:
+    - |
+      VERSION="${CI_COMMIT_TAG#v}"
+      echo "Releasing version: $VERSION"
+      mkdir -p .release
+      if command -v chlog >/dev/null 2>&1; then
+        chlog extract "$VERSION" > .release/notes.md || true
+      fi
+      if [ ! -s .release/notes.md ]; then
+        echo "Release $VERSION" > .release/notes.md
+      fi
+    - curl -sL https://goreleaser.com/static/run | bash -s -- release --clean --release-notes=.release/notes.md
+[% end %]
