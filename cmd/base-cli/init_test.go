@@ -11,7 +11,6 @@ import (
 // resetInitFlags resets all init command flags to defaults.
 // Necessary because cobra persists flag values on the global rootCmd.
 func resetInitFlags() {
-	flagModule = ""
 	flagDescription = ""
 	flagAuthor = ""
 	flagLicense = "mit"
@@ -31,8 +30,7 @@ func TestRunInitNonInteractive(t *testing.T) {
 	projectDir := filepath.Join(destDir, "my-proj")
 
 	rootCmd.SetArgs([]string{
-		"init", "my-proj",
-		"--module", "github.com/test/my-proj",
+		"init", "my-proj", "github.com/test/my-proj",
 		"--description", "Test project",
 		"--author", "Tester",
 		"--license", "mit",
@@ -75,8 +73,7 @@ func TestRunInitNonInteractive(t *testing.T) {
 func TestRunInitInvalidLicense(t *testing.T) {
 	resetInitFlags()
 	rootCmd.SetArgs([]string{
-		"init", "test",
-		"--module", "github.com/test/test",
+		"init", "test", "github.com/test/test",
 		"--description", "x",
 		"--license", "bsd",
 		"--dir", t.TempDir(),
@@ -91,8 +88,7 @@ func TestRunInitInvalidLicense(t *testing.T) {
 func TestRunInitInvalidLayout(t *testing.T) {
 	resetInitFlags()
 	rootCmd.SetArgs([]string{
-		"init", "test",
-		"--module", "github.com/test/test",
+		"init", "test", "github.com/test/test",
 		"--description", "x",
 		"--layout", "invalid",
 		"--dir", t.TempDir(),
@@ -107,8 +103,7 @@ func TestRunInitInvalidLayout(t *testing.T) {
 func TestRunInitInvalidCI(t *testing.T) {
 	resetInitFlags()
 	rootCmd.SetArgs([]string{
-		"init", "test",
-		"--module", "github.com/test/test",
+		"init", "test", "github.com/test/test",
 		"--description", "x",
 		"--ci", "jenkins",
 		"--dir", t.TempDir(),
@@ -124,12 +119,15 @@ func TestRunInitExistingNonEmptyDir(t *testing.T) {
 	resetInitFlags()
 	destDir := t.TempDir()
 	projectDir := filepath.Join(destDir, "exists")
-	os.MkdirAll(projectDir, 0o755)
-	os.WriteFile(filepath.Join(projectDir, "file.txt"), []byte("x"), 0o644)
+	if err := os.MkdirAll(projectDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(projectDir, "file.txt"), []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
 
 	rootCmd.SetArgs([]string{
-		"init", "exists",
-		"--module", "github.com/test/exists",
+		"init", "exists", "github.com/test/exists",
 		"--description", "x",
 		"--dir", projectDir,
 		"--no-git-init",
@@ -146,8 +144,7 @@ func TestRunInitLibLayout(t *testing.T) {
 	projectDir := filepath.Join(destDir, "my-lib")
 
 	rootCmd.SetArgs([]string{
-		"init", "my-lib",
-		"--module", "github.com/test/my-lib",
+		"init", "my-lib", "github.com/test/my-lib",
 		"--description", "A library",
 		"--license", "mit",
 		"--ci", "github",
@@ -177,7 +174,9 @@ func TestRunInitMissingModuleNonInteractive(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	w.Close()
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
 	oldStdin := os.Stdin
 	os.Stdin = r
 	defer func() { os.Stdin = oldStdin }()
@@ -190,15 +189,14 @@ func TestRunInitMissingModuleNonInteractive(t *testing.T) {
 	})
 
 	if err := rootCmd.Execute(); err == nil {
-		t.Error("expected error when --module not provided in non-interactive mode")
+		t.Error("expected error when module not provided in non-interactive mode")
 	}
 }
 
 func TestRunInitInvalidAgentMD(t *testing.T) {
 	resetInitFlags()
 	rootCmd.SetArgs([]string{
-		"init", "test",
-		"--module", "github.com/test/test",
+		"init", "test", "github.com/test/test",
 		"--description", "x",
 		"--agent-md", "invalid",
 		"--dir", t.TempDir(),

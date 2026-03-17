@@ -29,8 +29,8 @@ base-cli init <name>                    # Generate a new Go project
 base-cli init <name> --layout both      # CLI + library (default)
 base-cli init <name> --layout cli       # CLI only (cmd/ + internal/)
 base-cli init <name> --layout lib       # Library only (pkg/)
-base-cli init <name> --module <path>    # Custom Go module path
-base-cli init <name> --description <t>  # One-line project description
+base-cli init <name> <module>           # Custom Go module path (positional)
+base-cli init <name> <module> -d <t>    # With short description flag
 base-cli init <name> --author <name>    # Author name (default: git user.name)
 base-cli init <name> --license mit      # License: mit|apache2|none (default: mit)
 base-cli init <name> --ci both          # CI: github|gitlab|both (default: both)
@@ -53,7 +53,7 @@ base-cli uninstall --yes                # Skip confirmation
 base-cli completion bash                # Shell completion: bash|zsh|fish|powershell
 ```
 
-Interactive prompts for `--module` and `--description` if not provided (requires TTY).
+Interactive prompts for `module` and `--description` if not provided as args/flags (requires TTY).
 
 ## Configuration
 

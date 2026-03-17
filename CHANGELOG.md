@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - User-level config system at `~/.config/base-cli/config.yaml` — set defaults for all init flags
 - `base-cli config` command with `init`, `show`, `set`, `edit`, `path` subcommands
 - Config values applied as defaults when CLI flags are not explicitly passed
+- Shorthand -d flag for --description on init command
+- assets/demo.tape for VHS terminal GIF generation
+
+### Changed
+
+- module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed
 
 ## [0.0.1] - 2026-03-16
 

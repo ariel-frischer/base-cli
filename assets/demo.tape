@@ -7,9 +7,9 @@ Require tree
 # Terminal styling
 Set Shell "bash"
 Set FontFamily "Noto Sans Mono"
-Set FontSize 20
+Set FontSize 16
 Set Width 1100
-Set Height 600
+Set Height 800
 Set Padding 20
 Set Framerate 30
 
@@ -41,7 +41,7 @@ Show
 # --- Demo starts ---
 
 # 1. Init a new project
-Type "base-cli init my-app --module github.com/demo/my-app -d 'My Go CLI app'"
+Type "base-cli init my-app github.com/demo/my-app -d 'My Go CLI app'"
 Enter
 Sleep 3s
 

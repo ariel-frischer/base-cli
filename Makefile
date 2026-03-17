@@ -1,4 +1,4 @@
-.PHONY: help install i test test-v test-coverage lint lint-go format clean build run go-install uninstall release patch minor major prep-release
+.PHONY: help install i test test-v test-e2e test-coverage lint lint-go format clean build run go-install uninstall release patch minor major prep-release
 
 MODULE_PATH=github.com/ariel-frischer/base-cli
 VERSION?=$(shell git tag --sort=-v:refname 2>/dev/null | head -1)
@@ -31,6 +31,9 @@ test: ## Run tests
 
 test-v: ## Run tests (verbose)
 	go test -v ./...
+
+test-e2e: ## Run end-to-end tests (slower, requires go in PATH)
+	go test -v -tags e2e -timeout 120s ./e2e/
 
 test-coverage: ## Run tests with coverage
 	go test -race -coverprofile=coverage.out ./...

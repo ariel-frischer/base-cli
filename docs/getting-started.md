@@ -51,9 +51,8 @@ base-cli init my-tool
 If you're in an interactive terminal, base-cli prompts for the Go module path and description. Otherwise, pass them explicitly:
 
 ```bash
-base-cli init my-tool \
-  --module github.com/alice/my-tool \
-  --description "A handy CLI tool"
+base-cli init my-tool github.com/alice/my-tool \
+  -d "A handy CLI tool"
 ```
 
 This generates a complete Go project with a Cobra CLI, a public library package, CI pipelines, a goreleaser config, an installer script, and more. Build and run it immediately:
@@ -153,10 +152,9 @@ base-cli init my-tool --no-changelog    # Skip changelog files and CI gate
 ## All Flags Reference
 
 ```
-base-cli init <project-name> [flags]
+base-cli init <project-name> [module] [flags]
 
-  --module <path>         Go module path (default: github.com/<git-user>/<name>)
-  --description <text>    One-line project description
+  -d, --description <text>  One-line project description
   --author <name>         Author name (default: git config user.name)
   --license mit|apache2|none           (default: mit)
   --ci github|gitlab|both             (default: both)
@@ -170,7 +168,7 @@ base-cli init <project-name> [flags]
   --no-color              Disable colored output (global flag)
 ```
 
-All flags (except `--module`, `--description`, and `--dir`) can be set as defaults via the config file. See [Configuration](#configuration).
+All flags (except `-d`/`--description` and `--dir`) can be set as defaults via the config file. See [Configuration](#configuration).
 
 ## Configuration
 
