@@ -21,13 +21,13 @@ Highly configurable Go CLI generator — scaffold a CLI, library, or both with C
 
 </div>
 
-## Install
+## 📦 Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ariel-frischer/base-cli/main/install.sh | sh
 ```
 
-## Quickstart
+## 🚀 Quickstart
 
 **1. Install the skill** so your coding agent knows how to use base-cli:
 
@@ -50,7 +50,7 @@ make build
 ./bin/my-project version
 ```
 
-## What You Get
+## ✨ Features
 
 Every generated project includes:
 
@@ -72,7 +72,7 @@ Every generated project includes:
 - **AI Agent Skill** — `.skills/default/SKILL.md` + README install instructions ([Agent Skills standard](https://agentskills.io))
 - **README.md**, **CLAUDE.md**, **LICENSE**, **.gitignore**
 
-## Usage
+## 📖 Usage
 
 ```bash
 base-cli init <project-name> [module] [flags]
@@ -99,7 +99,7 @@ base-cli completion [bash|zsh|fish|powershell]
 
 Interactive prompts for `module` and `--description` if not provided (requires TTY).
 
-## Configuration
+## ⚙️ Configuration
 
 Set user-level defaults so you don't have to pass the same flags every time:
 
@@ -168,7 +168,7 @@ no_changelog: false
 | `cli` | `cmd/` + `internal/` | Standalone CLI tool |
 | `lib` | `pkg/` | Pure library (no cobra, no build targets) |
 
-## Example
+## 💡 Example
 
 ```bash
 # CLI + library (default)
@@ -187,7 +187,7 @@ base-cli init my-cli --layout cli
 base-cli init my-tool
 ```
 
-## Generated Project Structure
+## 🏗️ Generated Project Structure
 
 **`--layout both`** (default):
 
@@ -303,7 +303,7 @@ Or pass directly: `codex --instructions .skills/default/SKILL.md`
 
 </details>
 
-## Alternate Installation Methods
+## 📦 Alternate Installation Methods
 
 **Go install**:
 
@@ -319,7 +319,7 @@ import "github.com/ariel-frischer/base-cli/pkg/scaffold"
 
 **Download a release binary** from the [releases page](https://github.com/ariel-frischer/base-cli/releases/latest).
 
-## Development
+## 🔧 Development
 
 ```bash
 make build          # Build binary
@@ -328,6 +328,6 @@ make lint           # Run linters
 make format         # Format code
 ```
 
-## License
+## 📄 License
 
 [MIT](LICENSE)
