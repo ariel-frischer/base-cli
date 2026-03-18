@@ -86,7 +86,7 @@ func TestSaveCreatesDir(t *testing.T) {
 func TestLoadInvalidYAML(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "bad.yaml")
-	os.WriteFile(path, []byte(":::invalid"), 0o644)
+	require.NoError(t, os.WriteFile(path, []byte(":::invalid"), 0o644))
 
 	_, err := Load(path)
 	if err == nil {

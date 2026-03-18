@@ -92,7 +92,7 @@ func Generate(cfg Config, destDir string) error {
 		}
 
 		if err := tmpl.Execute(f, cfg); err != nil {
-			f.Close()
+			_ = f.Close()
 			return fmt.Errorf("executing template %s: %w", relPath, err)
 		}
 		if err := f.Close(); err != nil {

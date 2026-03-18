@@ -117,7 +117,7 @@ func TestApplyConfigDefaultsFlagOverride(t *testing.T) {
 	}
 
 	// Parse with explicit --license flag so cobra marks it as Changed
-	cmd.ParseFlags([]string{"--license", "mit"})
+	_ = cmd.ParseFlags([]string{"--license", "mit"})
 	applyConfigDefaults(cmd, userCfg)
 
 	// Explicit flag should win over config
