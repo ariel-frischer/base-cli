@@ -27,18 +27,6 @@ Scaffold Go projects with a modular CLI + importable library structure out of th
 curl -fsSL https://raw.githubusercontent.com/ariel-frischer/base-cli/main/install.sh | sh
 ```
 
-**Go install**:
-
-```bash
-go install github.com/ariel-frischer/base-cli/cmd/base-cli@latest
-```
-
-**Library only** (use the scaffold engine programmatically):
-
-```go
-import "github.com/ariel-frischer/base-cli/pkg/scaffold"
-```
-
 ## Quickstart
 
 **1. Install the skill** so your coding agent knows how to use base-cli:
@@ -49,14 +37,14 @@ npx skills add ariel-frischer/base-cli
 
 **2. Ask your agent** to scaffold whatever you need:
 
-> "Use base-cli to generate a Go CLI project called my-tool that does X"
+> "Use the base-cli skill to generate a Go CLI project called my-tool that does X"
 
 Your agent will pick the right flags, layout, and options for you.
 
 **Or run it directly:**
 
 ```bash
-base-cli init my-project
+base-cli init my-project -d "A cool tool that does X"
 cd my-project
 make build
 ./bin/my-project version
@@ -314,6 +302,22 @@ curl -fsSL https://raw.githubusercontent.com/ariel-frischer/base-cli/main/.skill
 Or pass directly: `codex --instructions .skills/default/SKILL.md`
 
 </details>
+
+## Alternate Installation Methods
+
+**Go install**:
+
+```bash
+go install github.com/ariel-frischer/base-cli/cmd/base-cli@latest
+```
+
+**Library only** (use the scaffold engine programmatically):
+
+```go
+import "github.com/ariel-frischer/base-cli/pkg/scaffold"
+```
+
+**Download a release binary** from the [releases page](https://github.com/ariel-frischer/base-cli/releases/latest).
 
 ## Development
 
