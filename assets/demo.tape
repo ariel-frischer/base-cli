@@ -9,7 +9,7 @@ Set Shell "bash"
 Set FontFamily "Noto Sans Mono"
 Set FontSize 16
 Set Width 1100
-Set Height 1000
+Set Height 1050
 Set Padding 20
 Set Framerate 30
 
@@ -46,6 +46,7 @@ Show
 
 # 1. Init a new project (module auto-derived from config)
 Type "base-cli init go-cli -d 'My Go CLI app'"
+Sleep 2s
 Enter
 Sleep 5s
 
@@ -53,5 +54,6 @@ Ctrl+L
 
 # 2. Show the generated structure
 Type "tree go-cli"
+Sleep 1s
 Enter
 Sleep 7s

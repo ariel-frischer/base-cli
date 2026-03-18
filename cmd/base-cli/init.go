@@ -83,11 +83,13 @@ func runInit(cmd *cobra.Command, args []string) error {
 		host = detectHost()
 	}
 
-	// Resolve module path: explicit arg > prompt (TTY) > derived from host/gitUser
+	// Resolve module path: explicit arg > auto-derive > prompt (TTY)
 	var modulePath string
 	defaultModule := fmt.Sprintf("%s/%s/%s", host, gitUser, projectName)
 	if len(args) >= 2 {
 		modulePath = args[1]
+	} else if host != "" && gitUser != "" {
+		modulePath = defaultModule
 	} else if isTTY {
 		modulePath = prompt("Go module path", defaultModule)
 	} else {

@@ -1,5 +1,8 @@
 project: base-cli
 versions:
+    unreleased:
+        changed:
+            - Skip Go module path prompt when host and git_user are available (config or auto-detected)
     0.1.0:
         date: 2026-03-18
         added:
