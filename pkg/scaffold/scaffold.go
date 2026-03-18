@@ -37,6 +37,7 @@ type Config struct {
 	Changelog   bool   // Include changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
 	AgentMDClaude bool // Include CLAUDE.md and .skills/
 	AgentMDAgents bool // Include AGENTS.md
+	Config        bool // Include internal/config package and config subcommands
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -128,6 +129,11 @@ func skipDir(relPath string, cfg Config) error {
 		return fs.SkipDir
 	}
 
+	// Config: skip internal/config when disabled
+	if !cfg.Config && matchesPrefix(relPath, "internal/config") {
+		return fs.SkipDir
+	}
+
 	// Layout filtering
 	if !cfg.HasCLI {
 		if matchesPrefix(relPath, "cmd") || matchesPrefix(relPath, "internal") {
@@ -193,6 +199,11 @@ func skipFile(relPath string, cfg Config) bool {
 		return true
 	}
 	if !cfg.AgentMDAgents && relPath == "AGENTS.md.tmpl" {
+		return true
+	}
+
+	// Config command file
+	if !cfg.Config && relPath == "cmd/{{BinaryName}}/config.go.tmpl" {
 		return true
 	}
 

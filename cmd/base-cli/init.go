@@ -25,6 +25,7 @@ var (
 	flagNoGoreleaser bool
 	flagNoCommunity  bool
 	flagNoChangelog  bool
+	flagNoConfig     bool
 	flagAgentMD      string
 )
 
@@ -47,6 +48,7 @@ func init() {
 	initCmd.Flags().BoolVar(&flagNoGoreleaser, "no-goreleaser", false, "Skip goreleaser config and release workflow")
 	initCmd.Flags().BoolVar(&flagNoCommunity, "no-community", false, "Skip community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)")
 	initCmd.Flags().BoolVar(&flagNoChangelog, "no-changelog", false, "Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml, CI changelog gate)")
+	initCmd.Flags().BoolVar(&flagNoConfig, "no-config", false, "Skip config package and config subcommands (internal/config + cmd config)")
 	initCmd.Flags().StringVar(&flagAgentMD, "agent-md", "both", "AI agent docs: both, claude, agents, none")
 }
 
@@ -178,9 +180,10 @@ func runInit(cmd *cobra.Command, args []string) error {
 		HasCLI:      hasCLI,
 		HasLib:      hasLib,
 		LibPackage:  libPackage,
-		Goreleaser:  !flagNoGoreleaser,
-		Community:   !flagNoCommunity,
+		Goreleaser:    !flagNoGoreleaser,
+		Community:     !flagNoCommunity,
 		Changelog:     !flagNoChangelog,
+		Config:        !flagNoConfig && hasCLI,
 		AgentMDClaude: agentMDClaude,
 		AgentMDAgents: agentMDAgents,
 	}
@@ -310,4 +313,5 @@ func applyConfigDefaults(cmd *cobra.Command, cfg *config.Config) {
 	setBoolIfUnchanged("no-goreleaser", cfg.NoGoreleaser)
 	setBoolIfUnchanged("no-community", cfg.NoCommunity)
 	setBoolIfUnchanged("no-changelog", cfg.NoChangelog)
+	setBoolIfUnchanged("no-config", cfg.NoConfig)
 }

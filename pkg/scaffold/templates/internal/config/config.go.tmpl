@@ -1,3 +1,4 @@
+// Package config manages user-level configuration for [% .BinaryName %].
 package config
 
 import (
@@ -8,33 +9,26 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// DefaultDir returns ~/.config/base-cli.
+// DefaultDir returns ~/.config/[% .BinaryName %].
 func DefaultDir() string {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		dir = filepath.Join(os.Getenv("HOME"), ".config")
 	}
-	return filepath.Join(dir, "base-cli")
+	return filepath.Join(dir, "[% .BinaryName %]")
 }
 
-// DefaultPath returns ~/.config/base-cli/config.yaml.
+// DefaultPath returns ~/.config/[% .BinaryName %]/config.yaml.
 func DefaultPath() string {
 	return filepath.Join(DefaultDir(), "config.yaml")
 }
 
-// Config holds user-level defaults for base-cli init.
+// Config holds user-level defaults for [% .BinaryName %].
 // All fields are optional — zero values mean "use CLI default".
 type Config struct {
-	Author       string `yaml:"author,omitempty"`
-	License      string `yaml:"license,omitempty"`
-	CI           string `yaml:"ci,omitempty"`
-	Layout       string `yaml:"layout,omitempty"`
-	AgentMD      string `yaml:"agent_md,omitempty"`
-	NoGitInit    *bool  `yaml:"no_git_init,omitempty"`
-	NoGoreleaser *bool  `yaml:"no_goreleaser,omitempty"`
-	NoCommunity  *bool  `yaml:"no_community,omitempty"`
-	NoChangelog  *bool  `yaml:"no_changelog,omitempty"`
-	NoConfig     *bool  `yaml:"no_config,omitempty"`
+	// Add your config fields here, e.g.:
+	// OutputFormat string `yaml:"output_format,omitempty"`
+	// NoColor      *bool  `yaml:"no_color,omitempty"`
 }
 
 // Load reads config from path. Returns empty config (no error) if file is missing.
@@ -70,15 +64,15 @@ func Save(cfg *Config, path string) error {
 	return nil
 }
 
+// BoolPtr returns a pointer to b.
+func BoolPtr(b bool) *bool {
+	return &b
+}
+
 // BoolVal returns the value of a *bool, or the fallback if nil.
 func BoolVal(p *bool, fallback bool) bool {
 	if p != nil {
 		return *p
 	}
 	return fallback
-}
-
-// BoolPtr returns a pointer to b.
-func BoolPtr(b bool) *bool {
-	return &b
 }
