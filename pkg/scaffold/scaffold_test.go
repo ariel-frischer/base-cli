@@ -409,7 +409,9 @@ func TestGenerateNoCI(t *testing.T) {
 func TestGenerateReadOnlyDestDir(t *testing.T) {
 	cfg := bothConfig("fail")
 	destDir := filepath.Join(t.TempDir(), "readonly")
-	require.NoError(t, os.MkdirAll(destDir, 0o555))
+	if err := os.MkdirAll(destDir, 0o555); err != nil {
+		t.Fatal(err)
+	}
 	defer func() { _ = os.Chmod(destDir, 0o755) }() // cleanup
 
 	err := Generate(cfg, destDir)
