@@ -1,14 +1,10 @@
 project: base-cli
 versions:
-    unreleased:
-        added:
-            - todo flag to opt-in to TODO.md generation (off by default)
-        fixed:
-            - no_config missing from config show, set, and init template
-            - Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
+    unreleased: {}
     0.1.0:
         date: 2026-03-18
         added:
+            - todo flag to opt-in to TODO.md generation (off by default)
             - SKILL.md for AI agent integration
             - Installation instructions in README
             - '`--no-changelog` flag to skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml) and CI changelog gate'
@@ -20,6 +16,9 @@ versions:
             - Shorthand -d flag for --description on init command
             - assets/demo.tape for VHS terminal GIF generation
             - 'Config scaffold feature: scaffolded CLI projects now include `internal/config` package (Load/Save/DefaultPath, typed Config struct) and `config` subcommands (init/show/path/edit) by default; disable with `--no-config` flag or `no_config` in `~/.config/base-cli/config.yaml`'
+        fixed:
+            - no_config missing from config show, set, and init template
+            - Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
         changed:
             - 'module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed'
     0.0.1:

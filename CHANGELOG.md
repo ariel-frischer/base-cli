@@ -6,19 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added
-
-- todo flag to opt-in to TODO.md generation (off by default)
-
-### Fixed
-
-- no_config missing from config show, set, and init template
-- Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
-
 ## [0.1.0] - 2026-03-18
 
 ### Added
 
+- todo flag to opt-in to TODO.md generation (off by default)
 - SKILL.md for AI agent integration
 - Installation instructions in README
 - `--no-changelog` flag to skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml) and CI changelog gate
@@ -30,6 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Shorthand -d flag for --description on init command
 - assets/demo.tape for VHS terminal GIF generation
 - Config scaffold feature: scaffolded CLI projects now include `internal/config` package (Load/Save/DefaultPath, typed Config struct) and `config` subcommands (init/show/path/edit) by default; disable with `--no-config` flag or `no_config` in `~/.config/base-cli/config.yaml`
+
+### Fixed
+
+- no_config missing from config show, set, and init template
+- Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
 
 ### Changed
 
