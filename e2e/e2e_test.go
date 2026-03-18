@@ -199,6 +199,31 @@ func TestNoChangelog(t *testing.T) {
 	notExists(t, filepath.Join(dir, ".chlog.yaml"))
 }
 
+func TestConfigDefault(t *testing.T) {
+	dir := scaffold(t, "proj-cfg")
+	exists(t, filepath.Join(dir, "internal/config/config.go"))
+	exists(t, filepath.Join(dir, "internal/config/config_test.go"))
+	exists(t, filepath.Join(dir, "cmd/proj-cfg/config.go"))
+	builds(t, dir)
+}
+
+func TestNoConfig(t *testing.T) {
+	dir := scaffold(t, "proj-nocfg", "--no-config")
+	notExists(t, filepath.Join(dir, "internal/config"))
+	notExists(t, filepath.Join(dir, "cmd/proj-nocfg/config.go"))
+	// internal/version should still exist
+	exists(t, filepath.Join(dir, "internal/version/version.go"))
+	builds(t, dir)
+}
+
+func TestNoConfigLibLayout(t *testing.T) {
+	// lib layout never generates config regardless of flag
+	dir := scaffold(t, "proj-libcfg", "--layout", "lib")
+	notExists(t, filepath.Join(dir, "internal"))
+	notExists(t, filepath.Join(dir, "cmd"))
+	builds(t, dir)
+}
+
 func TestNoGitInit(t *testing.T) {
 	// scaffold() already passes --no-git-init; just verify
 	dir := scaffold(t, "proj-nogit")
@@ -319,10 +344,12 @@ func TestMinimalScaffoldBuilds(t *testing.T) {
 		"--no-goreleaser",
 		"--no-community",
 		"--no-changelog",
+		"--no-config",
 		"--agent-md", "none",
 	)
 	notExists(t, filepath.Join(dir, ".goreleaser.yaml"))
 	notExists(t, filepath.Join(dir, "CHANGELOG.yaml"))
 	notExists(t, filepath.Join(dir, "CLAUDE.md"))
+	notExists(t, filepath.Join(dir, "internal/config"))
 	builds(t, dir)
 }

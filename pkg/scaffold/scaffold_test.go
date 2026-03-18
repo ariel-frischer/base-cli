@@ -29,6 +29,7 @@ func bothConfig(name string) Config {
 		Goreleaser:    true,
 		Community:     true,
 		Changelog:     true,
+		Config:        true,
 		AgentMDClaude: true,
 		AgentMDAgents: true,
 	}
@@ -48,8 +49,11 @@ func TestGenerate(t *testing.T) {
 		"cmd/test-project/version.go",
 		"cmd/test-project/ui.go",
 		"cmd/test-project/help.go",
+		"cmd/test-project/config.go",
 		"internal/version/version.go",
 		"internal/version/version_test.go",
+		"internal/config/config.go",
+		"internal/config/config_test.go",
 		"pkg/testproject/doc.go",
 		"Makefile",
 		".goreleaser.yaml",
@@ -475,6 +479,16 @@ func TestSkipDir(t *testing.T) {
 			cfg:     Config{AgentMDClaude: true},
 			want:    nil,
 		},
+		"internal/config skipped when Config=false": {
+			relPath: "internal/config",
+			cfg:     Config{HasCLI: true, Config: false},
+			want:    fs.SkipDir,
+		},
+		"internal/config kept when Config=true": {
+			relPath: "internal/config",
+			cfg:     Config{HasCLI: true, Config: true},
+			want:    nil,
+		},
 		"unrelated dir kept": {
 			relPath: "docs",
 			cfg:     Config{},
@@ -571,6 +585,16 @@ func TestSkipFile(t *testing.T) {
 		"AGENTS.md kept when agents": {
 			relPath: "AGENTS.md.tmpl",
 			cfg:     Config{License: "mit", HasCLI: true, AgentMDAgents: true},
+			want:    false,
+		},
+		"config.go.tmpl skipped when Config=false": {
+			relPath: "cmd/{{BinaryName}}/config.go.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, Config: false},
+			want:    true,
+		},
+		"config.go.tmpl kept when Config=true": {
+			relPath: "cmd/{{BinaryName}}/config.go.tmpl",
+			cfg:     Config{License: "mit", HasCLI: true, Config: true},
 			want:    false,
 		},
 		"regular file kept": {
@@ -704,6 +728,112 @@ func TestGenerateAgentMDAgentsOnly(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(destDir, ".skills")); err == nil {
 		t.Error(".skills/ should not exist when AgentMDClaude=false")
+	}
+}
+
+func TestGenerateNoConfig(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.Config = false
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	shouldNotExist := []string{
+		"internal/config/config.go",
+		"internal/config/config_test.go",
+		"cmd/my-cli/config.go",
+	}
+	for _, f := range shouldNotExist {
+		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
+			t.Errorf("%s should not exist when Config=false", f)
+		}
+	}
+
+	// Other internal files should still exist
+	if _, err := os.Stat(filepath.Join(destDir, "internal/version/version.go")); os.IsNotExist(err) {
+		t.Error("internal/version/version.go should still exist when Config=false")
+	}
+
+	// go.mod should not contain yaml.v3
+	gomod, err := os.ReadFile(filepath.Join(destDir, "go.mod"))
+	if err != nil {
+		t.Fatalf("reading go.mod: %v", err)
+	}
+	if strings.Contains(string(gomod), "yaml.v3") {
+		t.Error("go.mod should not contain yaml.v3 when Config=false")
+	}
+}
+
+func TestGenerateConfigContent(t *testing.T) {
+	cfg := bothConfig("my-tool")
+	cfg.ModulePath = "github.com/alice/my-tool"
+	cfg.Config = true
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	// config.go should reference the binary name and module path
+	configGo, err := os.ReadFile(filepath.Join(destDir, "internal/config/config.go"))
+	if err != nil {
+		t.Fatalf("reading internal/config/config.go: %v", err)
+	}
+	if !strings.Contains(string(configGo), "my-tool") {
+		t.Error("internal/config/config.go should reference binary name")
+	}
+	if !strings.Contains(string(configGo), "gopkg.in/yaml.v3") {
+		t.Error("internal/config/config.go should import yaml.v3")
+	}
+
+	// cmd config.go should reference the module path
+	cmdConfigGo, err := os.ReadFile(filepath.Join(destDir, "cmd/my-tool/config.go"))
+	if err != nil {
+		t.Fatalf("reading cmd/my-tool/config.go: %v", err)
+	}
+	if !strings.Contains(string(cmdConfigGo), "github.com/alice/my-tool/internal/config") {
+		t.Error("cmd/my-tool/config.go should import internal/config")
+	}
+
+	// go.mod should contain yaml.v3
+	gomod, err := os.ReadFile(filepath.Join(destDir, "go.mod"))
+	if err != nil {
+		t.Fatalf("reading go.mod: %v", err)
+	}
+	if !strings.Contains(string(gomod), "gopkg.in/yaml.v3") {
+		t.Error("go.mod should contain yaml.v3 when Config=true")
+	}
+
+	// root.go should register configCmd
+	rootGo, err := os.ReadFile(filepath.Join(destDir, "cmd/my-tool/root.go"))
+	if err != nil {
+		t.Fatalf("reading cmd/my-tool/root.go: %v", err)
+	}
+	if !strings.Contains(string(rootGo), "configCmd") {
+		t.Error("root.go should register configCmd when Config=true")
+	}
+}
+
+func TestGenerateConfigLibLayout(t *testing.T) {
+	cfg := bothConfig("my-lib")
+	cfg.Layout = "lib"
+	cfg.HasCLI = false
+	cfg.HasLib = true
+	cfg.Config = true // should be ignored for lib layout
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	// Config files should not exist: lib layout skips all of internal/ and cmd/
+	shouldNotExist := []string{"internal", "cmd"}
+	for _, f := range shouldNotExist {
+		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
+			t.Errorf("%s should not exist for lib layout", f)
+		}
 	}
 }
 
