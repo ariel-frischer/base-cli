@@ -34,6 +34,7 @@ func init() {
 	rootCmd.SetHelpFunc(colorizedHelp)
 
 	rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(setupCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(configCmd)

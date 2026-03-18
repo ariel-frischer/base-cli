@@ -1,5 +1,13 @@
 project: base-cli
 versions:
+    unreleased:
+        added:
+            - Config fields 'host' and 'git_user' for auto-deriving module path without requiring full URL
+            - Add 'base-cli setup' interactive first-time configuration wizard
+            - Add GitLab user detection via glab CLI alongside existing GitHub detection
+        changed:
+            - Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
+            - Auto-detect host (github.com/gitlab.com) based on available CLI authentication
     0.1.0:
         date: 2026-03-18
         added:

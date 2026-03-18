@@ -40,6 +40,7 @@ base-cli init <name> --no-git-init      # Skip git init
 base-cli init <name> --no-goreleaser   # Skip goreleaser config and release workflow
 base-cli init <name> --no-community    # Skip community files (issue templates, etc.)
 base-cli init <name> --no-changelog    # Skip changelog files (CHANGELOG.yaml, .chlog.yaml)
+base-cli setup                          # Interactive first-time configuration wizard
 base-cli config init                    # Create ~/.config/base-cli/config.yaml
 base-cli config init --force            # Overwrite existing config
 base-cli config show                    # Show resolved config (config vs default)
@@ -53,13 +54,15 @@ base-cli uninstall --yes                # Skip confirmation
 base-cli completion bash                # Shell completion: bash|zsh|fish|powershell
 ```
 
-Interactive prompts for `module` and `--description` if not provided as args/flags (requires TTY).
+Interactive prompts for `module` and `--description` if not provided as args/flags (requires TTY). In non-interactive mode, module path is auto-derived from `host`/`git_user`/`project-name`.
 
 ## Configuration
 
 User-level defaults at `~/.config/base-cli/config.yaml`. CLI flags always override config values.
 
 ```yaml
+host: github.com        # Module host — also used for repo URL
+git_user: yourname      # Git username (default: auto-detected from gh/git)
 author: Your Name
 license: apache2        # mit, apache2, none
 ci: github              # github, gitlab, both
@@ -71,7 +74,7 @@ no_community: false
 no_changelog: false
 ```
 
-Config keys for `base-cli config set`: `author`, `license`, `ci`, `layout`, `agent_md`, `no_git_init`, `no_goreleaser`, `no_community`, `no_changelog`.
+Config keys for `base-cli config set`: `host`, `git_user`, `author`, `license`, `ci`, `layout`, `agent_md`, `no_git_init`, `no_goreleaser`, `no_community`, `no_changelog`.
 
 ## Layout Options
 

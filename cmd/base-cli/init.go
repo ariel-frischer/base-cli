@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -75,16 +74,13 @@ func runInit(cmd *cobra.Command, args []string) error {
 	// Resolve git user: config > auto-detect
 	gitUser := userCfg.GitUser
 	if gitUser == "" {
-		gitUser = gitConfigValue("user.name")
-		if u := gitHubUser(); u != "" {
-			gitUser = u
-		}
+		gitUser = detectGitUser()
 	}
 
-	// Resolve host: config > "github.com"
+	// Resolve host: config > auto-detect
 	host := userCfg.Host
 	if host == "" {
-		host = "github.com"
+		host = detectHost()
 	}
 
 	// Resolve module path: explicit arg > prompt (TTY) > derived from host/gitUser
@@ -240,55 +236,6 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 
 	return nil
-}
-
-func isTerminal() bool {
-	fi, err := os.Stdin.Stat()
-	if err != nil {
-		return false
-	}
-	return fi.Mode()&os.ModeCharDevice != 0
-}
-
-func prompt(label, defaultVal string) string {
-	if defaultVal != "" {
-		fmt.Printf("%s [%s]: ", label, defaultVal)
-	} else {
-		fmt.Printf("%s: ", label)
-	}
-	reader := bufio.NewReader(os.Stdin)
-	answer, _ := reader.ReadString('\n')
-	answer = strings.TrimSpace(answer)
-	if answer == "" {
-		return defaultVal
-	}
-	return answer
-}
-
-func gitConfigValue(key string) string {
-	out, err := exec.Command("git", "config", "--get", key).Output()
-	if err != nil {
-		return ""
-	}
-	return strings.TrimSpace(string(out))
-}
-
-func gitHubUser() string {
-	// Try to extract from GitHub CLI
-	out, err := exec.Command("gh", "api", "user", "--jq", ".login").Output()
-	if err == nil && len(out) > 0 {
-		return strings.TrimSpace(string(out))
-	}
-	// Fall back to git config
-	email := gitConfigValue("user.email")
-	if parts := strings.Split(email, "@"); len(parts) > 0 {
-		// Common pattern: user@github.com or user+noreply@github.com
-		name := strings.Split(parts[0], "+")[0]
-		if name != "" {
-			return name
-		}
-	}
-	return gitConfigValue("user.name")
 }
 
 func runInDir(dir string, name string, args ...string) error {

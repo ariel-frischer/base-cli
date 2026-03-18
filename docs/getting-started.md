@@ -27,10 +27,12 @@ base-cli version
 If you plan to generate multiple projects, configure your preferences once so you don't have to pass the same flags every time:
 
 ```bash
-# Create a config file at ~/.config/base-cli/config.yaml
-base-cli config init
+# Interactive wizard — walks through all essential settings
+base-cli setup
 
-# Set your preferred defaults
+# Or set individual values manually
+base-cli config set host github.com
+base-cli config set git_user yourname
 base-cli config set author "Your Name"
 base-cli config set license apache2
 base-cli config set ci github
@@ -48,7 +50,7 @@ All config values are optional. CLI flags always override them. See [Configurati
 base-cli init my-tool
 ```
 
-If you're in an interactive terminal, base-cli prompts for the Go module path and description. Otherwise, pass them explicitly:
+If you're in an interactive terminal, base-cli prompts for the Go module path and description. In non-interactive mode, the module path is auto-derived from `host`/`git_user`/`project-name` (configurable via `base-cli config set`). You can always override it explicitly:
 
 ```bash
 base-cli init my-tool github.com/alice/my-tool \
@@ -211,6 +213,8 @@ base-cli config path              # Print config file path
 # ~/.config/base-cli/config.yaml
 # All fields are optional. CLI flags always override these values.
 
+host: github.com        # Module host — also used for repo URL
+git_user: yourname      # Git username (default: auto-detected from gh/git)
 author: Your Name
 license: apache2        # mit, apache2, none
 ci: github              # github, gitlab, both
@@ -236,6 +240,8 @@ A config value is only applied when the corresponding flag is **not** explicitly
 
 | Key | Type | Values | Default |
 |-----|------|--------|---------|
+| `host` | string | any hostname | `github.com` |
+| `git_user` | string | any | auto-detected from gh/git |
 | `author` | string | any | git config user.name |
 | `license` | string | `mit`, `apache2`, `none` | `mit` |
 | `ci` | string | `github`, `gitlab`, `both` | `both` |

@@ -4,6 +4,19 @@ All notable changes to base-cli will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Config fields 'host' and 'git_user' for auto-deriving module path without requiring full URL
+- Add 'base-cli setup' interactive first-time configuration wizard
+- Add GitLab user detection via glab CLI alongside existing GitHub detection
+
+### Changed
+
+- Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
+- Auto-detect host (github.com/gitlab.com) based on available CLI authentication
+
 ## [0.1.0] - 2026-03-18
 
 ### Added
@@ -46,4 +59,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `base-cli uninstall` for self-removal
 - `base-cli version` with pretty ASCII box display
 
+[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/ariel-frischer/base-cli/compare/v0.0.1...v0.1.0

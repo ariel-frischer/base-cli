@@ -94,6 +94,7 @@ base-cli init <project-name> [module] [flags]
   --todo                Include TODO.md with MVP/stretch goals/tech debt sections
   --agent-md both|claude|agents|none  AI agent docs (default: both)
 
+base-cli setup                    Interactive first-time configuration wizard
 base-cli config init [--force]    Set up ~/.config/base-cli/config.yaml
 base-cli config show              Show resolved configuration
 base-cli config set <key> <value> Set a config value
@@ -104,17 +105,19 @@ base-cli uninstall [--yes]
 base-cli completion [bash|zsh|fish|powershell]
 ```
 
-Interactive prompts for `module` and `--description` if not provided (requires TTY).
+Interactive prompts for `module` and `--description` if not provided (requires TTY). In non-interactive mode, the module path is auto-derived from `host`/`git_user`/`project-name`.
 
 ## ⚙️ Configuration
 
 Set user-level defaults so you don't have to pass the same flags every time:
 
 ```bash
-# Create a config file at ~/.config/base-cli/config.yaml
-base-cli config init
+# Interactive wizard — fastest way to configure everything at once
+base-cli setup
 
-# Set defaults
+# Or set individual values
+base-cli config set host github.com
+base-cli config set git_user yourname
 base-cli config set license apache2
 base-cli config set ci github
 base-cli config set layout cli
@@ -142,6 +145,8 @@ Located at `~/.config/base-cli/config.yaml`:
 # base-cli configuration — user-level defaults for "base-cli init"
 # All fields are optional. CLI flags always override these values.
 
+host: github.com        # Module host — also used for repo URL
+git_user: yourname      # Git username (default: auto-detected from gh/git)
 author: Your Name
 license: apache2        # mit, apache2, none
 ci: github              # github, gitlab, both
@@ -159,6 +164,8 @@ todo: false
 
 | Key | Type | Values | Default |
 |-----|------|--------|---------|
+| `host` | string | any hostname | `github.com` |
+| `git_user` | string | any | auto-detected from gh/git |
 | `author` | string | any | git config user.name |
 | `license` | string | `mit`, `apache2`, `none` | `mit` |
 | `ci` | string | `github`, `gitlab`, `both` | `both` |
