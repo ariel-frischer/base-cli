@@ -1,8 +1,5 @@
 project: base-cli
 versions:
-    unreleased:
-        changed:
-            - Skip Go module path prompt when host and git_user are available (config or auto-detected)
     0.1.0:
         date: 2026-03-18
         added:
@@ -29,6 +26,7 @@ versions:
             - 'module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed'
             - Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
             - Auto-detect host (github.com/gitlab.com) based on available CLI authentication
+            - Skip Go module path prompt when host and git_user are available (config or auto-detected)
     0.0.1:
         date: 2026-03-16
         added:
