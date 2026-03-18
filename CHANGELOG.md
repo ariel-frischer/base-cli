@@ -4,19 +4,6 @@ All notable changes to base-cli will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
-
-### Added
-
-- Config fields 'host' and 'git_user' for auto-deriving module path without requiring full URL
-- Add 'base-cli setup' interactive first-time configuration wizard
-- Add GitLab user detection via glab CLI alongside existing GitHub detection
-
-### Changed
-
-- Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
-- Auto-detect host (github.com/gitlab.com) based on available CLI authentication
-
 ## [0.1.0] - 2026-03-18
 
 ### Added
@@ -33,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Shorthand -d flag for --description on init command
 - assets/demo.tape for VHS terminal GIF generation
 - Config scaffold feature: scaffolded CLI projects now include `internal/config` package (Load/Save/DefaultPath, typed Config struct) and `config` subcommands (init/show/path/edit) by default; disable with `--no-config` flag or `no_config` in `~/.config/base-cli/config.yaml`
+- Config fields 'host' and 'git_user' for auto-deriving module path without requiring full URL
+- `base-cli setup` interactive first-time configuration wizard
+- GitLab user detection via glab CLI alongside existing GitHub detection
 
 ### Fixed
 
@@ -43,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Remove CLAUDE.md and TODO.md from scaffolded .gitignore so they are tracked in git
 - module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed
+- Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
+- Auto-detect host (github.com/gitlab.com) based on available CLI authentication
 
 ## [0.0.1] - 2026-03-16
 
@@ -59,5 +51,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `base-cli uninstall` for self-removal
 - `base-cli version` with pretty ASCII box display
 
-[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/ariel-frischer/base-cli/compare/v0.0.1...v0.1.0

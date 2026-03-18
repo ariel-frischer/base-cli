@@ -1,13 +1,5 @@
 project: base-cli
 versions:
-    unreleased:
-        added:
-            - Config fields 'host' and 'git_user' for auto-deriving module path without requiring full URL
-            - Add 'base-cli setup' interactive first-time configuration wizard
-            - Add GitLab user detection via glab CLI alongside existing GitHub detection
-        changed:
-            - Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
-            - Auto-detect host (github.com/gitlab.com) based on available CLI authentication
     0.1.0:
         date: 2026-03-18
         added:
@@ -23,12 +15,17 @@ versions:
             - Shorthand -d flag for --description on init command
             - assets/demo.tape for VHS terminal GIF generation
             - 'Config scaffold feature: scaffolded CLI projects now include `internal/config` package (Load/Save/DefaultPath, typed Config struct) and `config` subcommands (init/show/path/edit) by default; disable with `--no-config` flag or `no_config` in `~/.config/base-cli/config.yaml`'
+            - Config fields 'host' and 'git_user' for auto-deriving module path without requiring full URL
+            - '`base-cli setup` interactive first-time configuration wizard'
+            - GitLab user detection via glab CLI alongside existing GitHub detection
         fixed:
             - no_config missing from config show, set, and init template
             - Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
         changed:
             - Remove CLAUDE.md and TODO.md from scaffolded .gitignore so they are tracked in git
             - 'module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed'
+            - Non-interactive mode now auto-derives module path from host/git_user/project-name instead of erroring
+            - Auto-detect host (github.com/gitlab.com) based on available CLI authentication
     0.0.1:
         date: 2026-03-16
         added:
