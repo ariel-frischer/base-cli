@@ -15,7 +15,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/ariel-frischer/base-cli)](https://github.com/ariel-frischer/base-cli/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Scaffold Go projects with a modular CLI + importable library structure out of the box.
+Highly configurable Go CLI generator — scaffold a CLI, library, or both with CI, releases, and best practices ready to go.
 
 <img src="assets/demo.gif" alt="base-cli demo" width="700" />
 

@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - no_config missing from config show, set, and init template
+- Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
 
 ## [0.1.0] - 2026-03-18
 
