@@ -78,7 +78,7 @@ Every generated project includes:
 - **Release script** with pre-flight checks
 - **CHANGELOG.yaml** + **CHANGELOG.md** + `.chlog.yaml` — optional, powered by [chlog](https://github.com/ariel-frischer/chlog) (skip with `--no-changelog`)
 - **Changelog CI gate** — validates changelog in CI when enabled (graceful skip if chlog not installed)
-- **TODO.md** with MVP, stretch goals, and tech debt sections
+- **TODO.md** with MVP, stretch goals, and tech debt sections — optional, use `--todo`
 - **testdata/** directory with sample fixture in `pkg/` (encourages fixture-based testing)
 - **assets/** directory for demo content (GIFs, screenshots, etc.)
 - **AI Agent Skill** — `.skills/default/SKILL.md` + README install instructions ([Agent Skills standard](https://agentskills.io))

@@ -42,7 +42,9 @@ var configSetCmd = &cobra.Command{
   no_git_init     Skip git init: true/false
   no_goreleaser   Skip goreleaser: true/false
   no_community    Skip community files: true/false
-  no_changelog    Skip changelog files: true/false`,
+  no_changelog    Skip changelog files: true/false
+  no_config       Skip config package: true/false
+  todo            Include TODO.md: true/false`,
 	Args: cobra.ExactArgs(2),
 	RunE: runConfigSet,
 }
@@ -92,6 +94,8 @@ func runConfigInit(cmd *cobra.Command, args []string) error {
 # no_goreleaser: false
 # no_community: false
 # no_changelog: false
+# no_config: false
+# todo: false
 `
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
@@ -116,6 +120,8 @@ func runConfigShow(cmd *cobra.Command, args []string) error {
 	printCfgRow("no_goreleaser", fmt.Sprintf("%v", config.BoolVal(cfg.NoGoreleaser, false)), cfg.NoGoreleaser != nil)
 	printCfgRow("no_community", fmt.Sprintf("%v", config.BoolVal(cfg.NoCommunity, false)), cfg.NoCommunity != nil)
 	printCfgRow("no_changelog", fmt.Sprintf("%v", config.BoolVal(cfg.NoChangelog, false)), cfg.NoChangelog != nil)
+	printCfgRow("no_config", fmt.Sprintf("%v", config.BoolVal(cfg.NoConfig, false)), cfg.NoConfig != nil)
+	printCfgRow("todo", fmt.Sprintf("%v", config.BoolVal(cfg.Todo, false)), cfg.Todo != nil)
 	return nil
 }
 
@@ -198,10 +204,23 @@ func runConfigSet(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("no_changelog expects true/false, got %q", value)
 		}
 		cfg.NoChangelog = config.BoolPtr(b)
+	case "no_config":
+		b, err := strconv.ParseBool(value)
+		if err != nil {
+			return fmt.Errorf("no_config expects true/false, got %q", value)
+		}
+		cfg.NoConfig = config.BoolPtr(b)
+	case "todo":
+		b, err := strconv.ParseBool(value)
+		if err != nil {
+			return fmt.Errorf("todo expects true/false, got %q", value)
+		}
+		cfg.Todo = config.BoolPtr(b)
 	default:
 		validKeys := strings.Join([]string{
 			"author", "license", "ci", "layout", "agent_md",
 			"no_git_init", "no_goreleaser", "no_community", "no_changelog",
+			"no_config", "todo",
 		}, ", ")
 		return fmt.Errorf("unknown key %q\nvalid keys: %s", key, validKeys)
 	}

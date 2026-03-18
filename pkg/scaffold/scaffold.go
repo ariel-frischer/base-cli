@@ -38,6 +38,7 @@ type Config struct {
 	AgentMDClaude bool   // Include CLAUDE.md and .skills/
 	AgentMDAgents bool   // Include AGENTS.md
 	Config        bool   // Include internal/config package and config subcommands
+	Todo          bool   // Include TODO.md
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
@@ -204,6 +205,11 @@ func skipFile(relPath string, cfg Config) bool {
 
 	// Config command file
 	if !cfg.Config && relPath == "cmd/{{BinaryName}}/config.go.tmpl" {
+		return true
+	}
+
+	// TODO.md
+	if !cfg.Todo && relPath == "TODO.md.tmpl" {
 		return true
 	}
 

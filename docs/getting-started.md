@@ -159,6 +159,14 @@ base-cli init my-tool --no-config       # Skip config package and subcommands
 
 The scaffolded `Config` struct starts empty — add your own fields and the `config set` command as your project grows.
 
+### TODO.md
+
+Disabled by default. Generates a `TODO.md` with MVP, stretch goals, and tech debt sections.
+
+```bash
+base-cli init my-tool --todo            # Include TODO.md
+```
+
 ## All Flags Reference
 
 ```
@@ -176,6 +184,7 @@ base-cli init <project-name> [module] [flags]
   --no-community          Skip community files (issue templates, PR template, etc.)
   --no-changelog          Skip changelog files and CI changelog gate
   --no-config             Skip config package and subcommands (internal/config + cmd config)
+  --todo                  Include TODO.md with MVP/stretch goals/tech debt sections
   --no-color              Disable colored output (global flag)
 ```
 
@@ -212,6 +221,7 @@ no_goreleaser: false
 no_community: false
 no_changelog: false
 no_config: false
+todo: false
 ```
 
 ### Precedence
@@ -236,6 +246,7 @@ A config value is only applied when the corresponding flag is **not** explicitly
 | `no_community` | bool | `true`, `false` | `false` |
 | `no_changelog` | bool | `true`, `false` | `false` |
 | `no_config` | bool | `true`, `false` | `false` |
+| `todo` | bool | `true`, `false` | `false` |
 
 ## Using the Library API
 

@@ -35,6 +35,7 @@ type Config struct {
 	NoCommunity  *bool  `yaml:"no_community,omitempty"`
 	NoChangelog  *bool  `yaml:"no_changelog,omitempty"`
 	NoConfig     *bool  `yaml:"no_config,omitempty"`
+	Todo         *bool  `yaml:"todo,omitempty"`
 }
 
 // Load reads config from path. Returns empty config (no error) if file is missing.

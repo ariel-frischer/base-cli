@@ -32,6 +32,7 @@ func bothConfig(name string) Config {
 		Config:        true,
 		AgentMDClaude: true,
 		AgentMDAgents: true,
+		Todo:          true,
 	}
 }
 
@@ -597,6 +598,16 @@ func TestSkipFile(t *testing.T) {
 		"config.go.tmpl kept when Config=true": {
 			relPath: "cmd/{{BinaryName}}/config.go.tmpl",
 			cfg:     Config{License: "mit", HasCLI: true, Config: true},
+			want:    false,
+		},
+		"TODO.md skipped when Todo=false": {
+			relPath: "TODO.md.tmpl",
+			cfg:     Config{License: "mit", Todo: false},
+			want:    true,
+		},
+		"TODO.md kept when Todo=true": {
+			relPath: "TODO.md.tmpl",
+			cfg:     Config{License: "mit", Todo: true},
 			want:    false,
 		},
 		"regular file kept": {
