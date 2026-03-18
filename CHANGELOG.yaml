@@ -1,6 +1,8 @@
 project: base-cli
 versions:
-    unreleased: {}
+    unreleased:
+        changed:
+            - Remove CLAUDE.md and TODO.md from scaffolded .gitignore so they are tracked in git
     0.1.0:
         date: 2026-03-18
         added:

@@ -90,6 +90,9 @@ base-cli init <project-name> [module] [flags]
   --no-goreleaser       Skip goreleaser config and release workflow
   --no-community        Skip community files (issue templates, PR template, etc.)
   --no-changelog        Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
+  --no-config           Skip config package and config subcommands
+  --todo                Include TODO.md with MVP/stretch goals/tech debt sections
+  --agent-md both|claude|agents|none  AI agent docs (default: both)
 
 base-cli config init [--force]    Set up ~/.config/base-cli/config.yaml
 base-cli config show              Show resolved configuration
@@ -148,6 +151,8 @@ no_git_init: false
 no_goreleaser: false
 no_community: false
 no_changelog: false
+no_config: false
+todo: false
 ```
 
 ### Config keys
@@ -163,6 +168,8 @@ no_changelog: false
 | `no_goreleaser` | bool | `true`, `false` | `false` |
 | `no_community` | bool | `true`, `false` | `false` |
 | `no_changelog` | bool | `true`, `false` | `false` |
+| `no_config` | bool | `true`, `false` | `false` |
+| `todo` | bool | `true`, `false` | `false` |
 
 ### Layout Options
 
