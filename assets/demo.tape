@@ -33,6 +33,10 @@ Hide
 Type "cd /tmp && rm -rf base-cli-demo && mkdir base-cli-demo && cd base-cli-demo"
 Enter
 Sleep 500ms
+# Pre-configure so init doesn't prompt for module path
+Type "base-cli config set host github.com && base-cli config set git_user demo"
+Enter
+Sleep 500ms
 Type "clear"
 Enter
 Sleep 300ms
@@ -40,8 +44,8 @@ Show
 
 # --- Demo starts ---
 
-# 1. Init a new project
-Type "base-cli init go-cli github.com/demo/go-cli -d 'My Go CLI app'"
+# 1. Init a new project (module auto-derived from config)
+Type "base-cli init go-cli -d 'My Go CLI app'"
 Enter
 Sleep 5s
 

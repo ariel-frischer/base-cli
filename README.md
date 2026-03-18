@@ -33,13 +33,19 @@ curl -fsSL https://raw.githubusercontent.com/ariel-frischer/base-cli/main/instal
 
 ## 🚀 Quickstart
 
-**1. Install the skill** so your coding agent knows how to use base-cli:
+**1. One-time setup** — configure your defaults interactively:
+
+```bash
+base-cli setup
+```
+
+**2. Install the skill** so your coding agent knows how to use base-cli:
 
 ```bash
 npx skills add ariel-frischer/base-cli
 ```
 
-**2. Ask your agent** to scaffold whatever you need:
+**3. Ask your agent** to scaffold whatever you need:
 
 > "Use the base-cli skill to generate a Go CLI project called my-tool that does X"
 
