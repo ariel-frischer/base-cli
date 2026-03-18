@@ -96,7 +96,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		if isTTY {
 			description = prompt("Project description", "A CLI tool")
 		} else {
-			return fmt.Errorf("--description is required in non-interactive mode")
+			description = "A CLI tool"
 		}
 	}
 

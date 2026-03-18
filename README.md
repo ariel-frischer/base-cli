@@ -44,7 +44,7 @@ Your agent will pick the right flags, layout, and options for you.
 **Or run it directly:**
 
 ```bash
-base-cli init my-project -d "A cool tool that does X"
+base-cli init my-project -d "Tool that does X"
 cd my-project
 make build
 ./bin/my-project version

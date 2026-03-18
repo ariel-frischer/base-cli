@@ -5,6 +5,7 @@ versions:
             - todo flag to opt-in to TODO.md generation (off by default)
         fixed:
             - no_config missing from config show, set, and init template
+            - Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
     0.1.0:
         date: 2026-03-18
         added:
