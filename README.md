@@ -17,6 +17,8 @@
 
 Scaffold Go projects with a modular CLI + importable library structure out of the box.
 
+<img src="assets/demo.gif" alt="base-cli demo" width="700" />
+
 </div>
 
 ## Install
