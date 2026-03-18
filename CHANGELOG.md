@@ -4,8 +4,6 @@ All notable changes to base-cli will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
-
 ## [0.1.0] - 2026-03-18
 
 ### Added
@@ -30,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Remove CLAUDE.md and TODO.md from scaffolded .gitignore so they are tracked in git
 - module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed
 
 ## [0.0.1] - 2026-03-16
@@ -47,5 +46,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `base-cli uninstall` for self-removal
 - `base-cli version` with pretty ASCII box display
 
-[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/ariel-frischer/base-cli/compare/v0.0.1...v0.1.0

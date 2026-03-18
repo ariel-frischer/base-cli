@@ -72,22 +72,30 @@ func runInit(cmd *cobra.Command, args []string) error {
 		author = gitConfigValue("user.name")
 	}
 
-	// Resolve git user from git config
-	gitUser := gitConfigValue("user.name")
-	// Try to extract from remote URL or use login name
-	if u := gitHubUser(); u != "" {
-		gitUser = u
+	// Resolve git user: config > auto-detect
+	gitUser := userCfg.GitUser
+	if gitUser == "" {
+		gitUser = gitConfigValue("user.name")
+		if u := gitHubUser(); u != "" {
+			gitUser = u
+		}
 	}
 
-	// Resolve module path
+	// Resolve host: config > "github.com"
+	host := userCfg.Host
+	if host == "" {
+		host = "github.com"
+	}
+
+	// Resolve module path: explicit arg > prompt (TTY) > derived from host/gitUser
 	var modulePath string
+	defaultModule := fmt.Sprintf("%s/%s/%s", host, gitUser, projectName)
 	if len(args) >= 2 {
 		modulePath = args[1]
 	} else if isTTY {
-		defaultModule := fmt.Sprintf("github.com/%s/%s", gitUser, projectName)
 		modulePath = prompt("Go module path", defaultModule)
 	} else {
-		return fmt.Errorf("module path is required in non-interactive mode: base-cli init <name> <module>")
+		modulePath = defaultModule
 	}
 
 	// Resolve description
@@ -160,8 +168,8 @@ func runInit(cmd *cobra.Command, args []string) error {
 	libPackage := strings.ReplaceAll(projectName, "-", "")
 
 	// Determine repo URL
-	repoURL := fmt.Sprintf("https://github.com/%s/%s", gitUser, projectName)
-	if ciGitLab && !ciGitHub {
+	repoURL := fmt.Sprintf("https://%s/%s/%s", host, gitUser, projectName)
+	if ciGitLab && !ciGitHub && host == "github.com" {
 		repoURL = fmt.Sprintf("https://gitlab.com/%s/%s", gitUser, projectName)
 	}
 

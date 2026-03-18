@@ -1,8 +1,5 @@
 project: base-cli
 versions:
-    unreleased:
-        changed:
-            - Remove CLAUDE.md and TODO.md from scaffolded .gitignore so they are tracked in git
     0.1.0:
         date: 2026-03-18
         added:
@@ -22,6 +19,7 @@ versions:
             - no_config missing from config show, set, and init template
             - Make --description flag optional; non-interactive mode now defaults to 'A CLI tool' instead of erroring
         changed:
+            - Remove CLAUDE.md and TODO.md from scaffolded .gitignore so they are tracked in git
             - 'module path is now a positional arg: `base-cli init <name> <module>` — no --module flag needed'
     0.0.1:
         date: 2026-03-16

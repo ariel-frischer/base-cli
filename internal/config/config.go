@@ -30,6 +30,8 @@ type Config struct {
 	CI           string `yaml:"ci,omitempty"`
 	Layout       string `yaml:"layout,omitempty"`
 	AgentMD      string `yaml:"agent_md,omitempty"`
+	Host         string `yaml:"host,omitempty"`
+	GitUser      string `yaml:"git_user,omitempty"`
 	NoGitInit    *bool  `yaml:"no_git_init,omitempty"`
 	NoGoreleaser *bool  `yaml:"no_goreleaser,omitempty"`
 	NoCommunity  *bool  `yaml:"no_community,omitempty"`

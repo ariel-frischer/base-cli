@@ -166,7 +166,7 @@ func TestRunInitLibLayout(t *testing.T) {
 	}
 }
 
-func TestRunInitMissingModuleNonInteractive(t *testing.T) {
+func TestRunInitDerivedModuleNonInteractive(t *testing.T) {
 	resetInitFlags()
 
 	// Use a pipe (not a char device) so isTerminal() returns false.
@@ -181,15 +181,17 @@ func TestRunInitMissingModuleNonInteractive(t *testing.T) {
 	os.Stdin = r
 	defer func() { os.Stdin = oldStdin }()
 
+	dir := t.TempDir()
 	rootCmd.SetArgs([]string{
 		"init", "test",
 		"--description", "x",
-		"--dir", t.TempDir(),
+		"--dir", dir,
 		"--no-git-init",
 	})
 
-	if err := rootCmd.Execute(); err == nil {
-		t.Error("expected error when module not provided in non-interactive mode")
+	// Module should be auto-derived from host + git user + project name.
+	if err := rootCmd.Execute(); err != nil {
+		t.Errorf("expected module to be auto-derived in non-interactive mode, got error: %v", err)
 	}
 }
 

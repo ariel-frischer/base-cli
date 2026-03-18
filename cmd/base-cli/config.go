@@ -34,6 +34,8 @@ var configSetCmd = &cobra.Command{
 	Use:   "set <key> <value>",
 	Short: "Set a config value",
 	Long: `Set a config value. Valid keys:
+  host            Module host: github.com, gitlab.com, etc.
+  git_user        Git username (default: auto-detected from gh/git)
   author          Default author name
   license         Default license: mit, apache2, none
   ci              Default CI: github, gitlab, both
@@ -85,6 +87,8 @@ func runConfigInit(cmd *cobra.Command, args []string) error {
 	content := `# base-cli configuration — user-level defaults for "base-cli init"
 # All fields are optional. CLI flags always override these values.
 
+# host: github.com       # Module host — also used for repo URL
+# git_user: yourname     # Git username (default: auto-detected from gh/git)
 # author: Your Name
 # license: mit           # mit, apache2, none
 # ci: both               # github, gitlab, both
@@ -111,6 +115,8 @@ func runConfigShow(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	printCfgRow("host", stringOrDefault(cfg.Host, "github.com"), cfg.Host != "")
+	printCfgRow("git_user", stringOrDefault(cfg.GitUser, "(auto-detect)"), cfg.GitUser != "")
 	printCfgRow("author", cfg.Author, cfg.Author != "")
 	printCfgRow("license", stringOrDefault(cfg.License, "mit"), cfg.License != "")
 	printCfgRow("ci", stringOrDefault(cfg.CI, "both"), cfg.CI != "")
@@ -150,6 +156,10 @@ func runConfigSet(cmd *cobra.Command, args []string) error {
 	}
 
 	switch key {
+	case "host":
+		cfg.Host = value
+	case "git_user":
+		cfg.GitUser = value
 	case "author":
 		cfg.Author = value
 	case "license":
@@ -218,7 +228,7 @@ func runConfigSet(cmd *cobra.Command, args []string) error {
 		cfg.Todo = config.BoolPtr(b)
 	default:
 		validKeys := strings.Join([]string{
-			"author", "license", "ci", "layout", "agent_md",
+			"host", "git_user", "author", "license", "ci", "layout", "agent_md",
 			"no_git_init", "no_goreleaser", "no_community", "no_changelog",
 			"no_config", "todo",
 		}, ", ")
