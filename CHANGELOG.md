@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Config values applied as defaults when CLI flags are not explicitly passed
 - Shorthand -d flag for --description on init command
 - assets/demo.tape for VHS terminal GIF generation
+- Config scaffold feature: scaffolded CLI projects now include `internal/config` package (Load/Save/DefaultPath, typed Config struct) and `config` subcommands (init/show/path/edit) by default; disable with `--no-config` flag or `no_config` in `~/.config/base-cli/config.yaml`
 
 ### Changed
 

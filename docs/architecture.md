@@ -67,7 +67,7 @@ func Generate(cfg Config, destDir string) error
 **Pipeline:**
 
 1. **Walk** — `fs.WalkDir` over the embedded `templates/` filesystem
-2. **Skip** — For each file, evaluate whether it should be skipped based on config (layout, CI provider, license, goreleaser, community, changelog)
+2. **Skip** — For each file, evaluate whether it should be skipped based on config (layout, CI provider, license, goreleaser, community, changelog, config package)
 3. **Map path** — Transform the template path to its output path:
    - Strip `.tmpl` extension
    - Replace `{{BinaryName}}` and `{{LibPackage}}` placeholders

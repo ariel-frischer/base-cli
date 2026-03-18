@@ -100,10 +100,10 @@ func TestBoolVal(t *testing.T) {
 		fallback bool
 		want     bool
 	}{
-		"nil_true":    {nil, true, true},
-		"nil_false":   {nil, false, false},
-		"true_false":  {BoolPtr(true), false, true},
-		"false_true":  {BoolPtr(false), true, false},
+		"nil_true":   {nil, true, true},
+		"nil_false":  {nil, false, false},
+		"true_false": {BoolPtr(true), false, true},
+		"false_true": {BoolPtr(false), true, false},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {

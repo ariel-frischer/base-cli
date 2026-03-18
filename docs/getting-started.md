@@ -149,6 +149,16 @@ Enabled by default. Generates `CHANGELOG.yaml`, `CHANGELOG.md`, and `.chlog.yaml
 base-cli init my-tool --no-changelog    # Skip changelog files and CI gate
 ```
 
+### Config Package
+
+Enabled by default (CLI layouts only). Generates `internal/config/` with a typed `Config` struct, `Load`/`Save`/`DefaultPath` helpers, and table-driven tests. Also generates `cmd/<tool>/config.go` with `config init/show/path/edit` subcommands. Uses `gopkg.in/yaml.v3`.
+
+```bash
+base-cli init my-tool --no-config       # Skip config package and subcommands
+```
+
+The scaffolded `Config` struct starts empty — add your own fields and the `config set` command as your project grows.
+
 ## All Flags Reference
 
 ```
@@ -165,6 +175,7 @@ base-cli init <project-name> [module] [flags]
   --no-goreleaser         Skip goreleaser config and release workflow
   --no-community          Skip community files (issue templates, PR template, etc.)
   --no-changelog          Skip changelog files and CI changelog gate
+  --no-config             Skip config package and subcommands (internal/config + cmd config)
   --no-color              Disable colored output (global flag)
 ```
 
@@ -200,6 +211,7 @@ no_git_init: false
 no_goreleaser: false
 no_community: false
 no_changelog: false
+no_config: false
 ```
 
 ### Precedence
@@ -223,6 +235,7 @@ A config value is only applied when the corresponding flag is **not** explicitly
 | `no_goreleaser` | bool | `true`, `false` | `false` |
 | `no_community` | bool | `true`, `false` | `false` |
 | `no_changelog` | bool | `true`, `false` | `false` |
+| `no_config` | bool | `true`, `false` | `false` |
 
 ## Using the Library API
 

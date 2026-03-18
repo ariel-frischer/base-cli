@@ -16,28 +16,28 @@ var templateFS embed.FS
 
 // Config holds the template variables for scaffold generation.
 type Config struct {
-	ProjectName string
-	ModulePath  string
-	BinaryName  string
-	Description string
-	Author      string
-	Year        string
-	GitUser     string
-	RepoURL     string
-	CIGitHub    bool
-	CIGitLab    bool
-	EnvPrefix   string
-	License     string // "mit", "apache2", "none"
-	Layout      string // "both", "cli", "lib"
-	HasCLI      bool   // true for "both" and "cli"
-	HasLib      bool   // true for "both" and "lib"
-	LibPackage  string // Go-safe package name (hyphens stripped)
-	Goreleaser  bool   // Include goreleaser config and release workflow
-	Community   bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)
-	Changelog   bool   // Include changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
-	AgentMDClaude bool // Include CLAUDE.md and .skills/
-	AgentMDAgents bool // Include AGENTS.md
-	Config        bool // Include internal/config package and config subcommands
+	ProjectName   string
+	ModulePath    string
+	BinaryName    string
+	Description   string
+	Author        string
+	Year          string
+	GitUser       string
+	RepoURL       string
+	CIGitHub      bool
+	CIGitLab      bool
+	EnvPrefix     string
+	License       string // "mit", "apache2", "none"
+	Layout        string // "both", "cli", "lib"
+	HasCLI        bool   // true for "both" and "cli"
+	HasLib        bool   // true for "both" and "lib"
+	LibPackage    string // Go-safe package name (hyphens stripped)
+	Goreleaser    bool   // Include goreleaser config and release workflow
+	Community     bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)
+	Changelog     bool   // Include changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
+	AgentMDClaude bool   // Include CLAUDE.md and .skills/
+	AgentMDAgents bool   // Include AGENTS.md
+	Config        bool   // Include internal/config package and config subcommands
 }
 
 // Generate walks the embedded template tree and writes rendered files to destDir.
