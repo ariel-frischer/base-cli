@@ -14,6 +14,7 @@
 [![CI](https://github.com/ariel-frischer/base-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/ariel-frischer/base-cli/actions/workflows/ci.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/ariel-frischer/base-cli)](https://github.com/ariel-frischer/base-cli/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![Platform: macOS + Linux](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-blue)
 
 Highly configurable Go CLI generator.
 Scaffold a CLI, library, or both with CI, releases, and best practices ready to go.
@@ -23,6 +24,8 @@ Scaffold a CLI, library, or both with CI, releases, and best practices ready to 
 </div>
 
 ## 📦 Install
+
+> **macOS and Linux only.** Windows is not supported.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ariel-frischer/base-cli/main/install.sh | sh
