@@ -352,6 +352,10 @@ make lint           # Run linters
 make format         # Format code
 ```
 
+## ⭐ Support
+
+If you find base-cli useful, give it a star on [GitHub](https://github.com/ariel-frischer/base-cli) — it helps others discover the project.
+
 ## 📄 License
 
 [MIT](LICENSE)
