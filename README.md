@@ -225,7 +225,7 @@ my-project/
   go.mod
   README.md
   CLAUDE.md
-  TODO.md
+  TODO.md                       # if --todo set
   LICENSE
   CHANGELOG.yaml                # if --no-changelog not set
   CHANGELOG.md                  # if --no-changelog not set
@@ -247,7 +247,7 @@ my-lib/
   .gitignore
   README.md
   CLAUDE.md
-  TODO.md
+  TODO.md                       # if --todo set
   LICENSE
   CHANGELOG.yaml                # if --no-changelog not set
   CHANGELOG.md                  # if --no-changelog not set

@@ -83,7 +83,7 @@ Config keys for `base-cli config set`: `author`, `license`, `ci`, `layout`, `age
 
 ## Generated Project Structure
 
-Every project includes: Makefile, goreleaser config, CI pipelines (GitHub Actions + GitLab CI by default), shell installer/uninstaller, release script, TODO.md, assets/ directory, README.md, CLAUDE.md, LICENSE, .gitignore. Optional: CHANGELOG.yaml + CHANGELOG.md + .chlog.yaml + changelog CI gate (powered by [chlog](https://github.com/ariel-frischer/chlog), skip with `--no-changelog`).
+Every project includes: Makefile, goreleaser config, CI pipelines (GitHub Actions + GitLab CI by default), shell installer/uninstaller, release script, assets/ directory, README.md, CLAUDE.md, LICENSE, .gitignore. Optional: CHANGELOG.yaml + CHANGELOG.md + .chlog.yaml + changelog CI gate (powered by [chlog](https://github.com/ariel-frischer/chlog), skip with `--no-changelog`). Optional: TODO.md with MVP/stretch goals/tech debt sections (opt-in with `--todo`).
 
 CLI layouts add: Cobra CLI with root, version, and completion commands, version info via ldflags.
 
