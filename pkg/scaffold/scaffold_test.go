@@ -923,6 +923,118 @@ func TestGenerateAgentMDAgentsOnly(t *testing.T) {
 	}
 }
 
+func TestGenerateAgentsMDContentForCLIAndLibrary(t *testing.T) {
+	cfg := bothConfig("my-cli")
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("reading AGENTS.md: %v", err)
+	}
+	agents := string(content)
+
+	for _, want := range []string{
+		"- **Layout:** CLI + library",
+		"make build          # Build ./bin/my-cli with version ldflags",
+		"make install-global # Alias for go-install",
+		"go run ./cmd/my-cli config keys",
+		"Path priority: root `--config`, then `$TEST_PROJECT_CONFIG`, then the default path.",
+		"CHANGELOG.yaml        # changelog source",
+		"Release flow is `make prep-release VERSION=vX.Y.Z`, which runs `scripts/release.sh`.",
+		"Stage explicit files only, not `git add .` or `git add -A`.",
+		"Keep fixtures in `pkg/mycli/testdata/`",
+	} {
+		if !strings.Contains(agents, want) {
+			t.Errorf("AGENTS.md missing %q", want)
+		}
+	}
+}
+
+func TestGenerateAgentsMDContentForDisabledOptions(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.Config = false
+	cfg.Changelog = false
+	cfg.Goreleaser = false
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("reading AGENTS.md: %v", err)
+	}
+	agents := string(content)
+
+	for _, want := range []string{
+		"This scaffold was generated without config support.",
+		"Release automation was not generated.",
+		"Changelog support was disabled",
+	} {
+		if !strings.Contains(agents, want) {
+			t.Errorf("AGENTS.md missing %q", want)
+		}
+	}
+	for _, notWant := range []string{
+		"go run ./cmd/my-cli config keys",
+		"CHANGELOG.yaml        # changelog source",
+		"Run `chlog check` after changelog edits.",
+		"make prep-release VERSION=v0.1.0",
+	} {
+		if strings.Contains(agents, notWant) {
+			t.Errorf("AGENTS.md should not contain %q", notWant)
+		}
+	}
+}
+
+func TestGenerateAgentsMDContentForLibraryOnly(t *testing.T) {
+	cfg := bothConfig("my-lib")
+	cfg.Layout = "lib"
+	cfg.HasCLI = false
+	cfg.HasLib = true
+	cfg.Config = false
+	cfg.Goreleaser = false
+	cfg.BinaryName = "my-lib"
+	cfg.LibPackage = "mylib"
+
+	destDir := t.TempDir()
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("reading AGENTS.md: %v", err)
+	}
+	agents := string(content)
+
+	for _, want := range []string{
+		"- **Layout:** Library only",
+		"Library layout has no generated CLI config package or config commands.",
+		"Library layout has no generated binary release flow.",
+		"pkg/mylib/      # public library package",
+	} {
+		if !strings.Contains(agents, want) {
+			t.Errorf("AGENTS.md missing %q", want)
+		}
+	}
+	for _, notWant := range []string{
+		"make build",
+		"go run ./cmd/my-lib",
+		"cmd/my-lib/",
+		"GitHub Actions CI + release",
+	} {
+		if strings.Contains(agents, notWant) {
+			t.Errorf("AGENTS.md should not contain %q", notWant)
+		}
+	}
+}
+
 func TestGenerateNoConfig(t *testing.T) {
 	cfg := bothConfig("my-cli")
 	cfg.Config = false

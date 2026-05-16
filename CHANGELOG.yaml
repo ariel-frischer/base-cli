@@ -7,6 +7,7 @@ versions:
             - Generated CLI scaffolds now include command smoke tests for version, v alias, help, completion, and config path overrides.
             - Generated community files now include a concise SECURITY.md policy with supported versions, private vulnerability reporting, response expectations, and disclosure guidance.
         changed:
+            - Generated AGENTS.md now includes concise repo-specific command maps, config behavior, file layout, testing, release/changelog guidance, and multi-agent git rules.
             - Generated release scripts now enforce semver, clean worktrees, tag collision checks, tests/lint/build, goreleaser validation, and conditional chlog release-note checks.
     0.1.0:
         date: 2026-03-18

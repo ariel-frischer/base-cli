@@ -1,61 +1,139 @@
 # AGENTS.md
 
-## Project: [% .ProjectName %]
+## Project Context
 
-[% .Description %]
+[% .ProjectName %]: [% .Description %]
 
 - **Language:** Go
 - **Module:** `[% .ModulePath %]`
-- **Type:** [% if and .HasCLI .HasLib %]CLI + Library[% else if .HasCLI %]CLI[% else %]Library[% end %]
+- **Layout:** [% if and .HasCLI .HasLib %]CLI + library[% else if .HasCLI %]CLI only[% else %]Library only[% end %]
+- **Env prefix:** `[% .EnvPrefix %]`
 
-## Commands
+## Command Map
 
 ```bash
+make help           # List Make targets
+make install        # Download Go modules
 [%- if .HasCLI %]
-make build          # Build binary → ./bin/[% .BinaryName %]
+make build          # Build ./bin/[% .BinaryName %] with version ldflags
+make bin            # Alias for build
+make run            # Run ./cmd/[% .BinaryName %]
+make go-install     # Install [% .BinaryName %] to GOPATH/bin
+make install-global # Alias for go-install
 [%- end %]
 make test           # Run tests
-make lint           # Run linters (golangci-lint)
-make format         # Format code (gofumpt)
+make test-v         # Run tests verbosely
+make test-coverage  # Run tests with race detector and coverage
+make lint           # Run linters (golangci-lint, fallback go vet)
+make format         # Run go fmt ./...
+make clean          # Remove build artifacts
+[%- if and .HasCLI .Goreleaser %]
+make prep-release VERSION=v0.1.0  # Run release preflight
+make release VERSION=v0.1.0       # Alias for prep-release
+[%- end %]
 ```
+[% if .HasCLI -%]
+CLI smoke checks:
 
-## Architecture
+```bash
+go run ./cmd/[% .BinaryName %] --help
+go run ./cmd/[% .BinaryName %] version
+[%- if .Config %]
+go run ./cmd/[% .BinaryName %] config keys
+[%- end %]
+```
+[%- end %]
+
+## File Layout
 
 ```
 [%- if .HasCLI %]
 cmd/[% .BinaryName %]/      # CLI entry point (cobra)
-  main.go             # Binary entry point
-  root.go             # Root command + flag setup
-  version.go          # Version subcommand
-  ui.go               # Terminal output helpers
-  help.go             # Custom help formatting
+  main.go             # binary entry point
+  root.go             # root command, persistent flags, command wiring
+  version.go          # version subcommand
+[%- if .Config %]
+  config.go           # user config subcommands
+[%- end %]
+  ui.go               # terminal output helpers
+  help.go             # custom help formatting
 internal/
-  version/            # Version info injected via ldflags
+  version/            # version info injected via ldflags
+[%- if .Config %]
+  config/             # YAML config load/save/path helpers
+[%- end %]
 [%- end %]
 [%- if .HasLib %]
-pkg/[% .LibPackage %]/      # Public library package
-  testdata/           # Test fixtures
+pkg/[% .LibPackage %]/      # public library package
+  testdata/           # test fixtures
 [%- end %]
-assets/               # Demo content (GIFs, screenshots)
+assets/               # demo content (GIFs, screenshots)
 [%- if .CIGitHub %]
-.github/workflows/    # GitHub Actions CI[% if .Goreleaser %] + release[% end %]
+.github/workflows/    # GitHub Actions CI[% if and .HasCLI .Goreleaser %] + release[% end %]
 [%- end %]
 [%- if .CIGitLab %]
-.gitlab-ci.yml        # GitLab CI[% if .Goreleaser %] + release[% end %]
+.gitlab-ci.yml        # GitLab CI[% if and .HasCLI .Goreleaser %] + release[% end %]
+[%- end %]
+[%- if .Changelog %]
+CHANGELOG.yaml        # changelog source
+CHANGELOG.md          # generated changelog output
+.chlog.yaml           # changelog config
 [%- end %]
 ```
 
-## Dependencies
+## Config Behavior
 
-[%- if .HasCLI %]
-- [cobra](https://github.com/spf13/cobra) — CLI framework
-[%- end %]
-[%- if .Goreleaser %]
-- [goreleaser](https://goreleaser.com) — Release automation
-[%- end %]
+[% if .HasCLI -%]
+[% if .Config -%]
+- User config lives at `~/.config/[% .BinaryName %]/config.yaml` by default.
+- Path priority: root `--config`, then `$[% .EnvPrefix %]_CONFIG`, then the default path.
+- Config commands: `init`, `show`, `path`, `edit`, `get`, `set`, `toggle`, `keys`.
+- Missing config files load as empty config; CLI flags should still win over config defaults.
+[% else -%]
+- This scaffold was generated without config support. Do not add `internal/config` or `config` commands unless the feature is intentionally introduced.
+[% end -%]
+[% else -%]
+- Library layout has no generated CLI config package or config commands.
+[% end %]
+
+## Testing Guidance
+
+- Prefer table tests with `map[string]struct{}` for command/config behavior.
 [%- if .Changelog %]
-- [chlog](https://github.com/ariel-frischer/chlog) — Changelog management
+- Run `chlog check` after changelog edits.
 [%- end %]
+- Run `make test` for normal validation; use `make test-coverage` when touching shared packages.
+[%- if .HasCLI %]
+- Smoke-test generated command paths with `go run ./cmd/[% .BinaryName %] ...` before release work.
+[%- end %]
+[%- if .HasLib %]
+- Keep fixtures in `pkg/[% .LibPackage %]/testdata/` and avoid depending on the caller's working directory.
+[%- end %]
+
+## Release And Changelog
+
+[% if and .HasCLI .Goreleaser -%]
+- Release flow is `make prep-release VERSION=vX.Y.Z`, which runs `scripts/release.sh`.
+- `BUILD_VERSION`, `COMMIT`, and `BUILD_DATE` are injected through Makefile ldflags.
+[% else if .HasCLI -%]
+- Release automation was not generated. Keep version ldflags in the Makefile if you add a release flow later.
+[% else -%]
+- Library layout has no generated binary release flow.
+[% end -%]
+[% if .Changelog -%]
+- Changelog source is `CHANGELOG.yaml`; regenerate `CHANGELOG.md` with `chlog sync`.
+- Use `chlog add <category> "message"` for unreleased entries when possible.
+[% else -%]
+- Changelog support was disabled; do not assume `CHANGELOG.yaml`, `CHANGELOG.md`, or `.chlog.yaml` exist.
+[% end %]
+
+## Multi-Agent Git Rules
+
+- Check `git status --short` before editing and before committing.
+- Keep writes scoped to files relevant to the task; do not clean up unrelated work.
+- Do not use `git stash`, `git reset --hard`, or broad checkout/revert commands in a shared worktree.
+- Stage explicit files only, not `git add .` or `git add -A`.
+- Run focused tests for the files you touched, then the relevant Make targets before handoff.
 
 ## Coding Standards
 
@@ -63,12 +141,3 @@ assets/               # Demo content (GIFs, screenshots)
 - Errors wrapped with context: `fmt.Errorf("doing X: %w", err)`
 - Map-based table tests: `map[string]struct{}`
 - Accept interfaces, return concrete types
-
-## File Conventions
-
-- Templates use `[% "[%" %] [% "%]" %]` delimiters (avoids conflicts with goreleaser `{{ }}`)
-- Shell scripts in `scripts/` are `chmod +x`
-[%- if .HasLib %]
-- Test fixtures in `pkg/[% .LibPackage %]/testdata/`
-[%- end %]
-- Environment variable prefix: `[% .EnvPrefix %]`
