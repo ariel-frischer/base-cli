@@ -32,7 +32,7 @@ go.work
 Thumbs.db
 
 # Claude Code
-.claude/
+.claude/skills/
 CLAUDE.md
 TODO.md
 
@@ -40,5 +40,5 @@ TODO.md
 docs/internal/
 
 # Agent Skills (npx skills add)
-.agents/
+.agents/skills/
 skills-lock.json
