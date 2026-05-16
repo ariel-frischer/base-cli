@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Generated AGENTS.md now includes concise repo-specific command maps, config behavior, file layout, testing, release/changelog guidance, and multi-agent git rules.
 - Generated release scripts now enforce semver, clean worktrees, tag collision checks, tests/lint/build, goreleaser validation, and conditional chlog release-note checks.
+- Generated project skill docs now mention version aliases, config commands, SECURITY.md, AGENTS.md, release preflight, and Make aliases.
 
 ## [0.1.0] - 2026-03-18
 

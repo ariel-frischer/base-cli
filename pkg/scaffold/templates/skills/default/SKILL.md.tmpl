@@ -26,7 +26,16 @@ allowed-tools: Bash Read Write Edit
 ```bash
 [% .BinaryName %] --help              # Show available commands
 [% .BinaryName %] version             # Show version info
+[% .BinaryName %] v                   # Alias for version
 [% .BinaryName %] completion bash     # Shell completion: bash|zsh|fish|powershell
+[%- if .Config %]
+[% .BinaryName %] --config ./config.yaml config path
+[% .BinaryName %] config init         # Create user config
+[% .BinaryName %] config get <key>    # Read a config value
+[% .BinaryName %] config set <key> <value>
+[% .BinaryName %] config toggle <key> # Toggle a boolean value
+[% .BinaryName %] config keys         # List configurable keys
+[%- end %]
 ```
 [%- end %]
 [%- if .HasLib %]
@@ -40,7 +49,10 @@ import "[% .ModulePath %]/pkg/[% .LibPackage %]"
 
 ## Project Structure
 
-Includes: Makefile, CI pipelines, CHANGELOG.yaml + CHANGELOG.md, TODO.md, assets/ directory, .gitignore, LICENSE.
+Includes: Makefile, CI pipelines, assets/ directory, .gitignore, LICENSE[%- if .Community %], SECURITY.md[%- end %][%- if .Changelog %], CHANGELOG.yaml + CHANGELOG.md[%- end %][%- if .Todo %], TODO.md[%- end %].
+[%- if .AgentMDAgents %]
+Agent guidance lives in `AGENTS.md`.
+[%- end %]
 [%- if .HasLib %]
 Test fixtures live in `pkg/[% .LibPackage %]/testdata/`.
 [%- end %]
@@ -56,4 +68,11 @@ make install-global # Alias for go-install
 make test           # Run tests
 make lint           # Run linters
 make format         # Format code
+[%- if and .HasCLI .Goreleaser %]
+make prep-release VERSION=v0.1.0 # Validate release without publishing
+[%- end %]
 ```
+
+[%- if .Changelog %]
+Use `chlog add ...`, `chlog sync`, and `chlog check` for changelog updates.
+[%- end %]
