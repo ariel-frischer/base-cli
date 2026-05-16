@@ -75,6 +75,7 @@ func TestGenerate(t *testing.T) {
 		".github/pull_request_template.md",
 		"CONTRIBUTING.md",
 		"CODE_OF_CONDUCT.md",
+		"SECURITY.md",
 		"CHANGELOG.yaml",
 		"CHANGELOG.md",
 		".chlog.yaml",
@@ -122,6 +123,23 @@ func TestGenerate(t *testing.T) {
 	} {
 		if !strings.Contains(makefileContent, want) {
 			t.Errorf("generated Makefile missing %q", want)
+		}
+	}
+
+	securityContent, err := os.ReadFile(filepath.Join(destDir, "SECURITY.md"))
+	if err != nil {
+		t.Fatalf("reading generated SECURITY.md: %v", err)
+	}
+	for _, want := range []string{
+		"## Supported Versions",
+		"## Reporting a Vulnerability",
+		"Please report suspected vulnerabilities privately",
+		"## Response Expectations",
+		"## Public Disclosure",
+		"https://github.com/test/test-project/issues",
+	} {
+		if !strings.Contains(string(securityContent), want) {
+			t.Errorf("generated SECURITY.md missing %q", want)
 		}
 	}
 
@@ -340,6 +358,7 @@ func TestGenerateNoCommunity(t *testing.T) {
 		".github/pull_request_template.md",
 		"CONTRIBUTING.md",
 		"CODE_OF_CONDUCT.md",
+		"SECURITY.md",
 	}
 	for _, f := range shouldNotExist {
 		if _, err := os.Stat(filepath.Join(destDir, f)); err == nil {
@@ -758,6 +777,16 @@ func TestSkipFile(t *testing.T) {
 		"TODO.md kept when Todo=true": {
 			relPath: "TODO.md.tmpl",
 			cfg:     Config{License: "mit", Todo: true},
+			want:    false,
+		},
+		"SECURITY.md skipped when no community": {
+			relPath: "SECURITY.md.tmpl",
+			cfg:     Config{License: "mit", Community: false},
+			want:    true,
+		},
+		"SECURITY.md kept when community": {
+			relPath: "SECURITY.md.tmpl",
+			cfg:     Config{License: "mit", Community: true},
 			want:    false,
 		},
 		"regular file kept": {
