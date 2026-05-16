@@ -210,6 +210,40 @@ func TestNoChangelog(t *testing.T) {
 	notExists(t, filepath.Join(dir, ".chlog.yaml"))
 }
 
+func TestReleaseScriptPreflightWithChangelog(t *testing.T) {
+	dir := scaffold(t, "proj-release")
+	content, err := os.ReadFile(filepath.Join(dir, "scripts/release.sh"))
+	if err != nil {
+		t.Fatalf("reading release script: %v", err)
+	}
+	script := string(content)
+
+	for _, want := range []string{
+		`SEMVER_REGEX=`,
+		`git ls-remote --exit-code --tags origin`,
+		`goreleaser check`,
+		`goreleaser release --snapshot --clean --skip=publish`,
+		`chlog validate`,
+		`chlog check`,
+		`chlog extract "${BARE_VERSION}" > .release/notes.md`,
+	} {
+		if !strings.Contains(script, want) {
+			t.Errorf("release script missing %q", want)
+		}
+	}
+}
+
+func TestReleaseScriptWithoutChangelogSkipsChlog(t *testing.T) {
+	dir := scaffold(t, "proj-release-nocl", "--no-changelog")
+	content, err := os.ReadFile(filepath.Join(dir, "scripts/release.sh"))
+	if err != nil {
+		t.Fatalf("reading release script: %v", err)
+	}
+	if strings.Contains(string(content), "chlog") {
+		t.Error("release script should not reference chlog when --no-changelog is used")
+	}
+}
+
 func TestConfigDefault(t *testing.T) {
 	dir := scaffold(t, "proj-cfg")
 	exists(t, filepath.Join(dir, "internal/config/config.go"))
