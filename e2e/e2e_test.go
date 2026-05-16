@@ -78,6 +78,15 @@ func builds(t *testing.T, dir string) {
 	}
 }
 
+func generatedTestsPass(t *testing.T, dir string) {
+	t.Helper()
+	cmd := exec.Command("go", "test", "./...")
+	cmd.Dir = dir
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("go test ./... failed in %s:\n%s", dir, out)
+	}
+}
+
 func runGenerated(t *testing.T, dir string, name string, env []string, args ...string) (string, error) {
 	t.Helper()
 	allArgs := append([]string{"run", "./cmd/" + name + "/"}, args...)
@@ -148,6 +157,7 @@ func TestLayoutBothBuilds(t *testing.T) {
 	exists(t, filepath.Join(dir, "pkg/projboth/doc.go"))
 	notExists(t, filepath.Join(dir, ".git"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
 
 func TestLayoutCLIBuilds(t *testing.T) {
@@ -156,6 +166,7 @@ func TestLayoutCLIBuilds(t *testing.T) {
 	exists(t, filepath.Join(dir, "internal/version/version.go"))
 	notExists(t, filepath.Join(dir, "pkg"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
 
 func TestLayoutLibBuilds(t *testing.T) {
@@ -164,6 +175,7 @@ func TestLayoutLibBuilds(t *testing.T) {
 	notExists(t, filepath.Join(dir, "cmd"))
 	notExists(t, filepath.Join(dir, "internal"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
 
 // --- CI ---
@@ -216,6 +228,7 @@ func TestConfigDefault(t *testing.T) {
 	exists(t, filepath.Join(dir, "internal/config/config_test.go"))
 	exists(t, filepath.Join(dir, "cmd/proj-cfg/config.go"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
 
 func TestGeneratedConfigCommands(t *testing.T) {
@@ -289,6 +302,7 @@ func TestNoConfig(t *testing.T) {
 	// internal/version should still exist
 	exists(t, filepath.Join(dir, "internal/version/version.go"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
 
 func TestNoConfigLibLayout(t *testing.T) {
@@ -297,6 +311,7 @@ func TestNoConfigLibLayout(t *testing.T) {
 	notExists(t, filepath.Join(dir, "internal"))
 	notExists(t, filepath.Join(dir, "cmd"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
 
 func TestNoGitInit(t *testing.T) {
@@ -427,4 +442,5 @@ func TestMinimalScaffoldBuilds(t *testing.T) {
 	notExists(t, filepath.Join(dir, "CLAUDE.md"))
 	notExists(t, filepath.Join(dir, "internal/config"))
 	builds(t, dir)
+	generatedTestsPass(t, dir)
 }
