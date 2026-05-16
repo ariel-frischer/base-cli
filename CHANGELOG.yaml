@@ -1,6 +1,8 @@
 project: base-cli
 versions:
-    unreleased:
+    unreleased: {}
+    0.2.0:
+        date: 2026-05-16
         added:
             - 'Generated CLI projects now include fuller YAML config commands: get, set, toggle, keys, root --config, and <ENV_PREFIX>_CONFIG path override.'
             - 'Makefile aliases: `make bin` for build and `make install-global` for go-install in base-cli and generated CLI projects'
