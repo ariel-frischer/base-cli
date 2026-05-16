@@ -80,6 +80,7 @@ Every generated project includes:
 - **testdata/** directory with sample fixture in `pkg/` (encourages fixture-based testing)
 - **assets/** directory for demo content (GIFs, screenshots, etc.)
 - **AI Agent Skill** — `.skills/default/SKILL.md` + README install instructions ([Agent Skills standard](https://agentskills.io))
+- **AGENTS.md** — concise repo-specific agent guide with commands, layout, config, tests, release notes, and multi-agent git rules
 - **README.md**, **CLAUDE.md**, **LICENSE**, **.gitignore**
 
 ## 📖 Usage

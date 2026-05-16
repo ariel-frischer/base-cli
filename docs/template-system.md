@@ -60,6 +60,8 @@ All fields from the `scaffold.Config` struct are available in templates:
 | `.Community` | Include community files |
 | `.Changelog` | Include changelog files and CI gate |
 | `.Config` | Include `internal/config` package and `config` subcommands |
+| `.AgentMDClaude` | Include `CLAUDE.md` and `.skills/default/SKILL.md` |
+| `.AgentMDAgents` | Include `AGENTS.md` |
 
 ## Template Functions
 
@@ -157,6 +159,17 @@ Files are skipped entirely based on config values. The scaffold engine checks co
 - **Community filtering**: Issue templates, PR template, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` skipped when `Community` is false
 - **Changelog filtering**: `CHANGELOG.yaml`, `CHANGELOG.md`, `.chlog.yaml` skipped when changelog is disabled
 - **Config filtering**: `internal/config/` and `cmd/<tool>/config.go` skipped when `Config` is false (always false for `lib` layout)
+- **Agent docs filtering**: `CLAUDE.md` and `.skills/` follow `AgentMDClaude`; `AGENTS.md` follows `AgentMDAgents`
+
+## Generated Agent Guidance
+
+`AGENTS.md.tmpl` is intentionally concise and template-driven. It renders repo-specific guidance for:
+
+- command and Make target maps
+- CLI config behavior, including `--config`, `$<ENV_PREFIX>_CONFIG`, and disabled-config variants
+- layout-specific file maps for `cli`, `lib`, and `both`
+- testing, release, and changelog workflows
+- safe multi-agent git rules for shared worktrees
 
 ## Adding a New Template
 
