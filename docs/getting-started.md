@@ -137,7 +137,7 @@ base-cli init my-tool --no-goreleaser   # Skip all release tooling
 
 ### Community Files
 
-Enabled by default. Generates issue templates, a PR template, `CONTRIBUTING.md`, and `CODE_OF_CONDUCT.md`.
+Enabled by default. Generates issue templates, a PR template, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md`.
 
 ```bash
 base-cli init my-tool --no-community    # Skip community files
@@ -183,7 +183,7 @@ base-cli init <project-name> [module] [flags]
   --agent-md both|claude|agents|none  (default: both)
   --no-git-init           Skip git init and initial commit
   --no-goreleaser         Skip goreleaser config and release workflow
-  --no-community          Skip community files (issue templates, PR template, etc.)
+  --no-community          Skip community files (issue templates, PR template, SECURITY.md, etc.)
   --no-changelog          Skip changelog files and CI changelog gate
   --no-config             Skip config package and subcommands (internal/config + cmd config)
   --todo                  Include TODO.md with MVP/stretch goals/tech debt sections
@@ -318,7 +318,7 @@ func main() {
 | `HasLib` | bool | true for `both` and `lib` layouts |
 | `LibPackage` | string | Go-safe package name (hyphens stripped) |
 | `Goreleaser` | bool | Include goreleaser config and release tooling |
-| `Community` | bool | Include community files |
+| `Community` | bool | Include community files, including `SECURITY.md` |
 | `Changelog` | bool | Include changelog files and CI gate ([chlog](https://github.com/ariel-frischer/chlog)) |
 
 ## Generated Installer

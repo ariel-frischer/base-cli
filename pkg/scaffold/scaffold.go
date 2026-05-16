@@ -33,7 +33,7 @@ type Config struct {
 	HasLib        bool   // true for "both" and "lib"
 	LibPackage    string // Go-safe package name (hyphens stripped)
 	Goreleaser    bool   // Include goreleaser config and release workflow
-	Community     bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)
+	Community     bool   // Include community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
 	Changelog     bool   // Include changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
 	AgentMDClaude bool   // Include CLAUDE.md and .skills/
 	AgentMDAgents bool   // Include AGENTS.md
@@ -172,7 +172,7 @@ func skipFile(relPath string, cfg Config) bool {
 	// Community files
 	if !cfg.Community {
 		switch relPath {
-		case "CONTRIBUTING.md.tmpl", "CODE_OF_CONDUCT.md.tmpl",
+		case "CONTRIBUTING.md.tmpl", "CODE_OF_CONDUCT.md.tmpl", "SECURITY.md.tmpl",
 			"github/pull_request_template.md.tmpl":
 			return true
 		}

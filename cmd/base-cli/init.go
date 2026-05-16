@@ -46,7 +46,7 @@ func init() {
 	initCmd.Flags().StringVar(&flagDir, "dir", "", "Output directory (default: ./<name>)")
 	initCmd.Flags().BoolVar(&flagNoGitInit, "no-git-init", false, "Skip git init")
 	initCmd.Flags().BoolVar(&flagNoGoreleaser, "no-goreleaser", false, "Skip goreleaser config and release workflow")
-	initCmd.Flags().BoolVar(&flagNoCommunity, "no-community", false, "Skip community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT)")
+	initCmd.Flags().BoolVar(&flagNoCommunity, "no-community", false, "Skip community files (issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)")
 	initCmd.Flags().BoolVar(&flagNoChangelog, "no-changelog", false, "Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml, CI changelog gate)")
 	initCmd.Flags().BoolVar(&flagNoConfig, "no-config", false, "Skip config package and config subcommands (internal/config + cmd config)")
 	initCmd.Flags().BoolVar(&flagTodo, "todo", false, "Include TODO.md with MVP/stretch goals/tech debt sections")

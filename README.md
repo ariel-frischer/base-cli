@@ -80,7 +80,7 @@ Every generated project includes:
 - **testdata/** directory with sample fixture in `pkg/` (encourages fixture-based testing)
 - **assets/** directory for demo content (GIFs, screenshots, etc.)
 - **AI Agent Skill** — `.skills/default/SKILL.md` + README install instructions ([Agent Skills standard](https://agentskills.io))
-- **README.md**, **CLAUDE.md**, **LICENSE**, **.gitignore**
+- **README.md**, **CLAUDE.md**, **LICENSE**, **SECURITY.md**, **.gitignore**
 
 ## 📖 Usage
 
@@ -94,7 +94,7 @@ base-cli init <project-name> [module] [flags]
   --dir <path>          Output directory (default: ./<name>)
   --no-git-init         Skip git init
   --no-goreleaser       Skip goreleaser config and release workflow
-  --no-community        Skip community files (issue templates, PR template, etc.)
+  --no-community        Skip community files (issue templates, PR template, SECURITY.md, etc.)
   --no-changelog        Skip changelog files (CHANGELOG.yaml, CHANGELOG.md, .chlog.yaml)
   --no-config           Skip config package and config subcommands
   --todo                Include TODO.md with MVP/stretch goals/tech debt sections

@@ -57,7 +57,7 @@ All fields from the `scaffold.Config` struct are available in templates:
 | `.CIGitHub` | Generate GitHub Actions workflows |
 | `.CIGitLab` | Generate GitLab CI config |
 | `.Goreleaser` | Include goreleaser config |
-| `.Community` | Include community files |
+| `.Community` | Include community files, including `SECURITY.md` |
 | `.Changelog` | Include changelog files and CI gate |
 | `.Config` | Include `internal/config` package and `config` subcommands |
 
@@ -154,7 +154,7 @@ Files are skipped entirely based on config values. The scaffold engine checks co
 - **CI filtering**: `.github/` skipped when `CIGitHub` is false; `.gitlab-ci.yml` skipped when `CIGitLab` is false
 - **License filtering**: Only the matching `LICENSE_<type>.tmpl` is rendered; both skipped when `License` is `"none"`
 - **Goreleaser filtering**: `.goreleaser.yaml`, release workflow, and `scripts/release.sh` skipped when `Goreleaser` is false
-- **Community filtering**: Issue templates, PR template, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` skipped when `Community` is false
+- **Community filtering**: Issue templates, PR template, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` skipped when `Community` is false
 - **Changelog filtering**: `CHANGELOG.yaml`, `CHANGELOG.md`, `.chlog.yaml` skipped when changelog is disabled
 - **Config filtering**: `internal/config/` and `cmd/<tool>/config.go` skipped when `Config` is false (always false for `lib` layout)
 

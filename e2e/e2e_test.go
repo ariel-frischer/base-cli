@@ -213,6 +213,7 @@ func TestNoCommunity(t *testing.T) {
 	notExists(t, filepath.Join(dir, ".github/ISSUE_TEMPLATE"))
 	notExists(t, filepath.Join(dir, "CONTRIBUTING.md"))
 	notExists(t, filepath.Join(dir, "CODE_OF_CONDUCT.md"))
+	notExists(t, filepath.Join(dir, "SECURITY.md"))
 }
 
 func TestNoChangelog(t *testing.T) {
