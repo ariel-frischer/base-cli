@@ -48,6 +48,7 @@ func TestGenerate(t *testing.T) {
 		"cmd/test-project/main.go",
 		"cmd/test-project/root.go",
 		"cmd/test-project/version.go",
+		"cmd/test-project/command_test.go",
 		"cmd/test-project/ui.go",
 		"cmd/test-project/help.go",
 		"cmd/test-project/config.go",
@@ -121,6 +122,31 @@ func TestGenerate(t *testing.T) {
 	} {
 		if !strings.Contains(makefileContent, want) {
 			t.Errorf("generated Makefile missing %q", want)
+		}
+	}
+
+	versionContent, err := os.ReadFile(filepath.Join(destDir, "cmd/test-project/version.go"))
+	if err != nil {
+		t.Fatalf("reading generated version.go: %v", err)
+	}
+	if !strings.Contains(string(versionContent), `Aliases: []string{"v"}`) {
+		t.Error("generated version.go should include v alias")
+	}
+
+	commandTestContent, err := os.ReadFile(filepath.Join(destDir, "cmd/test-project/command_test.go"))
+	if err != nil {
+		t.Fatalf("reading generated command_test.go: %v", err)
+	}
+	for _, want := range []string{
+		`TestVersionCommandSmoke`,
+		`TestVersionAliasSmoke`,
+		`TestHelpCommandSmoke`,
+		`TestCompletionCommandSmoke`,
+		`TestConfigPathCommandSmoke`,
+		`TestConfigPathFlagOverride`,
+	} {
+		if !strings.Contains(string(commandTestContent), want) {
+			t.Errorf("generated command_test.go missing %q", want)
 		}
 	}
 
