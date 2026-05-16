@@ -345,10 +345,12 @@ Customize with environment variables:
 When goreleaser is enabled, the generated project includes a full release pipeline:
 
 1. **`scripts/release.sh`** — Run this locally to cut a release. It:
-   - Runs tests and linters
-   - Builds the binary
-   - Prompts for the next version
-   - Updates the changelog
+   - Validates the version as semver
+   - Requires a clean worktree
+   - Checks for local and remote tag collisions
+   - Runs tests, linters, and `make build`
+   - Runs `goreleaser check` and a snapshot dry-run
+   - Validates, stamps, syncs, and extracts release notes with `chlog` when changelog support is enabled
    - Creates a git tag and pushes it
 
 2. **CI release job** — Triggered by the new tag, it runs goreleaser to build multi-platform binaries and create a GitHub/GitLab release.

@@ -2,13 +2,13 @@
 .PHONY: help install i test test-v test-coverage lint lint-go format clean build run go-install uninstall release patch minor major prep-release
 
 MODULE_PATH=[% .ModulePath %]
-VERSION?=$(shell git tag --sort=-v:refname 2>/dev/null | head -1)
-ifeq ($(VERSION),)
-  VERSION=dev
+BUILD_VERSION?=$(shell git tag --sort=-v:refname 2>/dev/null | head -1)
+ifeq ($(BUILD_VERSION),)
+  BUILD_VERSION=dev
 endif
 COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
-LDFLAGS=-ldflags="-X ${MODULE_PATH}/internal/version.Version=${VERSION} \
+LDFLAGS=-ldflags="-X ${MODULE_PATH}/internal/version.Version=${BUILD_VERSION} \
                    -X ${MODULE_PATH}/internal/version.Commit=${COMMIT} \
                    -X ${MODULE_PATH}/internal/version.BuildDate=${BUILD_DATE} \
                    -s -w"
@@ -64,15 +64,12 @@ uninstall: ## Uninstall [% .BinaryName %]
 
 ##@ Release
 prep-release: ## Full release flow (usage: make prep-release VERSION=v0.1.0)
+ifndef VERSION
+	$(error VERSION is required, e.g. make prep-release VERSION=v1.0.0)
+endif
 	@./scripts/release.sh $(VERSION)
 
-release: ## Create a release tag and push (usage: make release VERSION=v1.0.0)
-	@if [ "$(VERSION)" = "dev" ] || [ -z "$(VERSION)" ]; then \
-		echo "Error: VERSION is required (e.g., make release VERSION=v1.0.0)"; \
-		exit 1; \
-	fi
-	git tag -a $(VERSION) -m "Release $(VERSION)"
-	git push origin $(VERSION)
+release: prep-release ## Run release preflight, create tag, and push (usage: make release VERSION=v1.0.0)
 
 patch: ## Bump patch version and release
 	$(eval CURRENT=$(shell git tag --sort=-v:refname | head -1 | sed 's/^v//'))

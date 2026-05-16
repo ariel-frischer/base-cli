@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Generated CLI projects now include fuller YAML config commands: get, set, toggle, keys, root --config, and <ENV_PREFIX>_CONFIG path override.
 
+### Changed
+
+- Generated release scripts now enforce semver, clean worktrees, tag collision checks, tests/lint/build, goreleaser validation, and conditional chlog release-note checks.
+
 ## [0.1.0] - 2026-03-18
 
 ### Added

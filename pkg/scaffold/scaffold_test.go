@@ -334,6 +334,90 @@ func TestGenerateNoChangelog(t *testing.T) {
 	}
 }
 
+func TestGeneratedReleaseScriptPreflight(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, "scripts/release.sh"))
+	if err != nil {
+		t.Fatalf("reading release script: %v", err)
+	}
+	releaseScript := string(content)
+
+	for _, want := range []string{
+		`SEMVER_REGEX=`,
+		`[[ ! "$VERSION" =~ $SEMVER_REGEX ]]`,
+		`git status --porcelain`,
+		`git rev-parse -q --verify "refs/tags/${TAG}"`,
+		`git ls-remote --exit-code --tags origin`,
+		`make test`,
+		`make lint`,
+		`make build`,
+		`goreleaser check`,
+		`goreleaser release --snapshot --clean --skip=publish`,
+		`require_cmd chlog`,
+		`chlog validate`,
+		`chlog check`,
+		`chlog extract "${BARE_VERSION}" > .release/notes.md`,
+	} {
+		if !strings.Contains(releaseScript, want) {
+			t.Errorf("release script missing %q", want)
+		}
+	}
+}
+
+func TestGeneratedReleaseScriptWithoutChangelogDoesNotRequireChlog(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	cfg.Changelog = false
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, "scripts/release.sh"))
+	if err != nil {
+		t.Fatalf("reading release script: %v", err)
+	}
+	if strings.Contains(string(content), "chlog") {
+		t.Error("release script should not reference chlog when changelog is disabled")
+	}
+}
+
+func TestGeneratedMakefileReleaseTargetsUsePreflightScript(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, "Makefile"))
+	if err != nil {
+		t.Fatalf("reading Makefile: %v", err)
+	}
+	makefile := string(content)
+
+	for _, want := range []string{
+		`BUILD_VERSION?=$(shell git tag --sort=-v:refname 2>/dev/null | head -1)`,
+		`-X ${MODULE_PATH}/internal/version.Version=${BUILD_VERSION}`,
+		`ifndef VERSION`,
+		`release: prep-release`,
+		`@./scripts/release.sh $(VERSION)`,
+	} {
+		if !strings.Contains(makefile, want) {
+			t.Errorf("Makefile missing %q", want)
+		}
+	}
+	if strings.Contains(makefile, "git tag -a $(VERSION)") {
+		t.Error("Makefile release target should delegate tagging to scripts/release.sh")
+	}
+}
+
 func TestResolveOutputPath(t *testing.T) {
 	tests := map[string]struct {
 		relPath    string
