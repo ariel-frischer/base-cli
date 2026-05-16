@@ -219,11 +219,14 @@ base-cli init my-tool
 my-project/
   cmd/my-project/
     main.go, root.go, version.go, ui.go
+    config.go                     # if --no-config not set
   pkg/myproject/
     doc.go
     testdata/sample.yaml
   internal/version/
     version.go, version_test.go
+  internal/config/                # if --no-config not set
+    config.go, config_test.go
   scripts/release.sh
   assets/.gitkeep
   .github/workflows/ci.yml     # if --ci github|both

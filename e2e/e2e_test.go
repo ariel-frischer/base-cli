@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -75,6 +76,16 @@ func builds(t *testing.T, dir string) {
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("go build ./... failed in %s:\n%s", dir, out)
 	}
+}
+
+func runGenerated(t *testing.T, dir string, name string, env []string, args ...string) (string, error) {
+	t.Helper()
+	allArgs := append([]string{"run", "./cmd/" + name + "/"}, args...)
+	cmd := exec.Command("go", allArgs...)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), env...)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
 }
 
 func exists(t *testing.T, path string) {
@@ -205,6 +216,70 @@ func TestConfigDefault(t *testing.T) {
 	exists(t, filepath.Join(dir, "internal/config/config_test.go"))
 	exists(t, filepath.Join(dir, "cmd/proj-cfg/config.go"))
 	builds(t, dir)
+}
+
+func TestGeneratedConfigCommands(t *testing.T) {
+	dir := scaffold(t, "proj-config")
+	configPath := filepath.Join(t.TempDir(), "config.yaml")
+
+	out, err := runGenerated(t, dir, "proj-config", nil, "--config", configPath, "config", "set", "output_format", "json")
+	if err != nil {
+		t.Fatalf("config set output_format: %v\n%s", err, out)
+	}
+	if !strings.Contains(out, "Set output_format = json") {
+		t.Fatalf("config set output %q missing confirmation", out)
+	}
+
+	out, err = runGenerated(t, dir, "proj-config", nil, "--config", configPath, "config", "get", "output_format")
+	if err != nil {
+		t.Fatalf("config get output_format: %v\n%s", err, out)
+	}
+	if strings.TrimSpace(out) != "output_format: json" {
+		t.Fatalf("config get output = %q, want output_format value", out)
+	}
+
+	out, err = runGenerated(t, dir, "proj-config", nil, "--config", configPath, "config", "toggle", "no_color")
+	if err != nil {
+		t.Fatalf("config toggle no_color: %v\n%s", err, out)
+	}
+	if !strings.Contains(out, "Set no_color = true") {
+		t.Fatalf("config toggle output %q missing confirmation", out)
+	}
+
+	out, err = runGenerated(t, dir, "proj-config", nil, "--config", configPath, "config", "set", "display.theme", "dark")
+	if err != nil {
+		t.Fatalf("config set nested: %v\n%s", err, out)
+	}
+	out, err = runGenerated(t, dir, "proj-config", nil, "--config", configPath, "config", "get", "display.theme")
+	if err != nil {
+		t.Fatalf("config get nested: %v\n%s", err, out)
+	}
+	if strings.TrimSpace(out) != "display.theme: dark" {
+		t.Fatalf("nested get output = %q, want display.theme value", out)
+	}
+
+	out, err = runGenerated(t, dir, "proj-config", nil, "config", "keys")
+	if err != nil {
+		t.Fatalf("config keys: %v\n%s", err, out)
+	}
+	for _, want := range []string{"output_format", "no_color", "display.theme"} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("config keys output %q missing %q", out, want)
+		}
+	}
+}
+
+func TestGeneratedConfigPathUsesEnvOverride(t *testing.T) {
+	dir := scaffold(t, "proj-envcfg")
+	configPath := filepath.Join(t.TempDir(), "from-env.yaml")
+
+	out, err := runGenerated(t, dir, "proj-envcfg", []string{"PROJ_ENVCFG_CONFIG=" + configPath}, "config", "path")
+	if err != nil {
+		t.Fatalf("config path: %v\n%s", err, out)
+	}
+	if strings.TrimSpace(out) != configPath {
+		t.Fatalf("config path = %q, want env override", out)
+	}
 }
 
 func TestNoConfig(t *testing.T) {

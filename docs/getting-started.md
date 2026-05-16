@@ -153,13 +153,13 @@ base-cli init my-tool --no-changelog    # Skip changelog files and CI gate
 
 ### Config Package
 
-Enabled by default (CLI layouts only). Generates `internal/config/` with a typed `Config` struct, `Load`/`Save`/`DefaultPath` helpers, and table-driven tests. Also generates `cmd/<tool>/config.go` with `config init/show/path/edit` subcommands. Uses `gopkg.in/yaml.v3`.
+Enabled by default (CLI layouts only). Generates `internal/config/` with a typed `Config` struct, `Load`/`Save`/`DefaultPath`/`Path` helpers, and table-driven tests. Also generates `cmd/<tool>/config.go` with `config init/show/path/edit/get/set/toggle/keys` subcommands, plus a root-level `--config` flag and `<TOOL>_CONFIG` environment override. Uses `gopkg.in/yaml.v3`.
 
 ```bash
 base-cli init my-tool --no-config       # Skip config package and subcommands
 ```
 
-The scaffolded `Config` struct starts empty — add your own fields and the `config set` command as your project grows.
+The scaffolded `Config` struct starts empty. Add your own fields and update the generated `configKeySpecs` list as your project grows.
 
 ### TODO.md
 

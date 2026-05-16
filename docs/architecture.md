@@ -53,6 +53,9 @@ Subcommands for managing `~/.config/base-cli/config.yaml`:
 - `config init` — Create a commented config file with all fields
 - `config show` — Print resolved values with source labels (config vs default)
 - `config set <key> <value>` — Set a single value with validation
+- `config get <key>` — Print a single value
+- `config toggle <key>` — Flip a boolean value
+- `config keys` — List configurable keys
 - `config edit` — Open in `$EDITOR`
 - `config path` — Print the config file path
 

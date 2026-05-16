@@ -4,6 +4,12 @@ All notable changes to base-cli will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Generated CLI projects now include fuller YAML config commands: get, set, toggle, keys, root --config, and <ENV_PREFIX>_CONFIG path override.
+
 ## [0.1.0] - 2026-03-18
 
 ### Added
@@ -52,4 +58,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `base-cli uninstall` for self-removal
 - `base-cli version` with pretty ASCII box display
 
+[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/ariel-frischer/base-cli/compare/v0.0.1...v0.1.0

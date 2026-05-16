@@ -3,6 +3,9 @@ package main
 import (
 	"os"
 
+[% if .Config -%]
+	"[% .ModulePath %]/internal/config"
+[% end -%]
 	"[% .ModulePath %]/internal/version"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -14,6 +17,10 @@ var rootCmd = &cobra.Command{
 	Version: version.Version,
 }
 
+[%- if .Config %]
+var configPathOverride string
+
+[%- end %]
 func init() {
 	// Disable colors when not writing to a terminal.
 	if fi, err := os.Stdout.Stat(); err == nil {
@@ -24,6 +31,9 @@ func init() {
 
 	var noColor bool
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "disable colored output")
+[%- if .Config %]
+	rootCmd.PersistentFlags().StringVar(&configPathOverride, "config", "", "config file path (default $[% .EnvPrefix %]_CONFIG or ~/.config/[% .BinaryName %]/config.yaml)")
+[%- end %]
 	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		if noColor {
 			color.NoColor = true
@@ -37,3 +47,9 @@ func init() {
 	rootCmd.AddCommand(configCmd)
 [%- end %]
 }
+
+[%- if .Config %]
+func selectedConfigPath() string {
+	return config.Path(configPathOverride)
+}
+[%- end %]

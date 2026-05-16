@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
+
+const EnvConfigPath = "[% .EnvPrefix %]_CONFIG"
 
 // DefaultDir returns ~/.config/[% .BinaryName %].
 func DefaultDir() string {
@@ -21,6 +24,17 @@ func DefaultDir() string {
 // DefaultPath returns ~/.config/[% .BinaryName %]/config.yaml.
 func DefaultPath() string {
 	return filepath.Join(DefaultDir(), "config.yaml")
+}
+
+// Path returns the effective config path using CLI override, env override, then default.
+func Path(override string) string {
+	if path := strings.TrimSpace(override); path != "" {
+		return path
+	}
+	if path := strings.TrimSpace(os.Getenv(EnvConfigPath)); path != "" {
+		return path
+	}
+	return DefaultPath()
 }
 
 // Config holds user-level defaults for [% .BinaryName %].

@@ -89,6 +89,26 @@ func TestGenerate(t *testing.T) {
 		}
 	}
 
+	rootContent, err := os.ReadFile(filepath.Join(destDir, "cmd/test-project/root.go"))
+	if err != nil {
+		t.Fatalf("reading generated root.go: %v", err)
+	}
+	for _, want := range []string{`StringVar(&configPathOverride, "config"`, `TEST_PROJECT_CONFIG`, `selectedConfigPath`} {
+		if !strings.Contains(string(rootContent), want) {
+			t.Errorf("generated root.go missing %q", want)
+		}
+	}
+
+	configContent, err := os.ReadFile(filepath.Join(destDir, "cmd/test-project/config.go"))
+	if err != nil {
+		t.Fatalf("reading generated config.go: %v", err)
+	}
+	for _, want := range []string{`configSetCmd`, `configGetCmd`, `configToggleCmd`, `configKeysCmd`, `setYAMLPath`} {
+		if !strings.Contains(string(configContent), want) {
+			t.Errorf("generated config.go missing %q", want)
+		}
+	}
+
 	// Verify GitLab CI was NOT generated (CIGitLab=false)
 	gitlabPath := filepath.Join(destDir, ".gitlab-ci.yml")
 	if _, err := os.Stat(gitlabPath); err == nil {
