@@ -3,6 +3,7 @@ versions:
     unreleased:
         added:
             - 'Generated CLI projects now include fuller YAML config commands: get, set, toggle, keys, root --config, and <ENV_PREFIX>_CONFIG path override.'
+            - 'Makefile aliases: `make bin` for build and `make install-global` for go-install in base-cli and generated CLI projects'
         changed:
             - Generated release scripts now enforce semver, clean worktrees, tag collision checks, tests/lint/build, goreleaser validation, and conditional chlog release-note checks.
     0.1.0:

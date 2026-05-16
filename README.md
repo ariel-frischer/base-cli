@@ -350,6 +350,8 @@ import "github.com/ariel-frischer/base-cli/pkg/scaffold"
 
 ```bash
 make build          # Build binary
+make bin            # Alias for build
+make install-global # Alias for go-install
 make test           # Run tests
 make lint           # Run linters
 make format         # Format code

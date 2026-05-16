@@ -1,4 +1,4 @@
-.PHONY: help install i test test-v test-e2e test-coverage lint lint-go format clean build run go-install uninstall release patch minor major prep-release
+.PHONY: help install i test test-v test-e2e test-coverage lint lint-go format clean build bin run go-install install-global uninstall release patch minor major prep-release
 
 MODULE_PATH=github.com/ariel-frischer/base-cli
 VERSION?=$(shell git tag --sort=-v:refname 2>/dev/null | head -1)
@@ -25,6 +25,8 @@ i: install ## Alias for install
 
 go-install: ## Install base-cli to GOPATH/bin
 	go install ${LDFLAGS} ./cmd/base-cli/
+
+install-global: go-install ## Alias for go-install
 
 test: ## Run tests
 	go test ./...
@@ -57,6 +59,8 @@ clean: ## Clean build artifacts
 
 build: ## Build binary with version info
 	go build ${LDFLAGS} -o bin/base-cli ./cmd/base-cli/
+
+bin: build ## Alias for build
 
 run: ## Run main package
 	go run ${LDFLAGS} ./cmd/base-cli/

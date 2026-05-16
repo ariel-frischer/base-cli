@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Generated CLI projects now include fuller YAML config commands: get, set, toggle, keys, root --config, and <ENV_PREFIX>_CONFIG path override.
+- Makefile aliases: `make bin` for build and `make install-global` for go-install in base-cli and generated CLI projects
 
 ### Changed
 

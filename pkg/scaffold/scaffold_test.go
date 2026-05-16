@@ -109,6 +109,21 @@ func TestGenerate(t *testing.T) {
 		}
 	}
 
+	makefile, err := os.ReadFile(filepath.Join(destDir, "Makefile"))
+	if err != nil {
+		t.Fatalf("reading generated Makefile: %v", err)
+	}
+	makefileContent := string(makefile)
+	for _, want := range []string{
+		"bin: build ## Alias for build",
+		"install-global: go-install ## Alias for go-install",
+		"go-install: ## Install test-project to GOPATH/bin",
+	} {
+		if !strings.Contains(makefileContent, want) {
+			t.Errorf("generated Makefile missing %q", want)
+		}
+	}
+
 	// Verify GitLab CI was NOT generated (CIGitLab=false)
 	gitlabPath := filepath.Join(destDir, ".gitlab-ci.yml")
 	if _, err := os.Stat(gitlabPath); err == nil {
@@ -248,6 +263,11 @@ func TestGenerateLayoutLib(t *testing.T) {
 	}
 	if strings.Contains(string(makefile), "build:") {
 		t.Error("lib-only Makefile should not contain build target")
+	}
+	for _, notWant := range []string{"bin:", "go-install:", "install-global:"} {
+		if strings.Contains(string(makefile), notWant) {
+			t.Errorf("lib-only Makefile should not contain %q", notWant)
+		}
 	}
 }
 

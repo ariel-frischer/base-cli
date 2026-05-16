@@ -1,5 +1,5 @@
 [%- if .HasCLI %]
-.PHONY: help install i test test-v test-coverage lint lint-go format clean build run go-install uninstall release patch minor major prep-release
+.PHONY: help install i test test-v test-coverage lint lint-go format clean build bin run go-install install-global uninstall release patch minor major prep-release
 
 MODULE_PATH=[% .ModulePath %]
 BUILD_VERSION?=$(shell git tag --sort=-v:refname 2>/dev/null | head -1)
@@ -26,6 +26,8 @@ i: install ## Alias for install
 
 go-install: ## Install [% .BinaryName %] to GOPATH/bin
 	go install ${LDFLAGS} ./cmd/[% .BinaryName %]/
+
+install-global: go-install ## Alias for go-install
 
 test: ## Run tests
 	go test ./...
@@ -55,6 +57,8 @@ clean: ## Clean build artifacts
 
 build: ## Build binary with version info
 	go build ${LDFLAGS} -o bin/[% .BinaryName %] ./cmd/[% .BinaryName %]/
+
+bin: build ## Alias for build
 
 run: ## Run main package
 	go run ${LDFLAGS} ./cmd/[% .BinaryName %]/
