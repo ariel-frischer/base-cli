@@ -50,6 +50,8 @@ Test fixtures live in `pkg/[% .LibPackage %]/testdata/`.
 ```bash
 [%- if .HasCLI %]
 make build          # Build binary
+make bin            # Alias for build
+make install-global # Alias for go-install
 [%- end %]
 make test           # Run tests
 make lint           # Run linters

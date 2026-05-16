@@ -46,6 +46,7 @@ git clone [% .RepoURL %].git
 cd [% .ProjectName %]
 [%- if .HasCLI %]
 make build    # Binary at bin/[% .BinaryName %]
+make bin      # Alias for build
 [%- else %]
 make test
 [%- end %]
@@ -117,6 +118,8 @@ Or pass directly: `codex --instructions .skills/default/SKILL.md`
 ```bash
 [%- if .HasCLI %]
 make build          # Build binary
+make bin            # Alias for build
+make install-global # Alias for go-install
 [%- end %]
 make test           # Run tests
 make lint           # Run linters
