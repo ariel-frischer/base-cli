@@ -435,6 +435,31 @@ func TestGeneratedReleaseScriptPreflight(t *testing.T) {
 	}
 }
 
+func TestGeneratedGitHubReleaseWorkflowUsesChlogNotes(t *testing.T) {
+	cfg := bothConfig("my-cli")
+	destDir := t.TempDir()
+
+	if err := Generate(cfg, destDir); err != nil {
+		t.Fatalf("Generate() error: %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(destDir, ".github/workflows/release.yml"))
+	if err != nil {
+		t.Fatalf("reading release workflow: %v", err)
+	}
+	workflow := string(content)
+
+	for _, want := range []string{
+		`go install github.com/ariel-frischer/chlog/cmd/chlog@v0.3.0`,
+		`chlog extract "$VERSION" > .release/notes.md`,
+		`args: release --clean --release-notes=.release/notes.md`,
+	} {
+		if !strings.Contains(workflow, want) {
+			t.Errorf("release workflow missing %q", want)
+		}
+	}
+}
+
 func TestGeneratedReleaseScriptWithoutChangelogDoesNotRequireChlog(t *testing.T) {
 	cfg := bothConfig("my-cli")
 	cfg.Changelog = false

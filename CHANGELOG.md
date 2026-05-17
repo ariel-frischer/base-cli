@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- GitHub tag releases now run through a release workflow that extracts version notes from chlog/CHANGELOG.md and passes them to GoReleaser automatically.
+
 ## [0.2.1] - 2026-05-16
 
 ### Changed
