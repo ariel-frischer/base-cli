@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-16
+
 ### Changed
 
 - Updated base-cli and generated project dependency pins for color, terminal, pflag, and x/sys modules; generated GitHub workflows now use current upload-artifact and GoReleaser action majors.
@@ -74,6 +76,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `base-cli uninstall` for self-removal
 - `base-cli version` with pretty ASCII box display
 
-[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ariel-frischer/base-cli/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ariel-frischer/base-cli/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ariel-frischer/base-cli/compare/v0.0.1...v0.1.0
