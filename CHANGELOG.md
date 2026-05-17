@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-05-16
+
 ### Changed
 
 - GitHub tag releases now run through a release workflow that extracts version notes from chlog/CHANGELOG.md and passes them to GoReleaser automatically.
@@ -80,7 +82,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `base-cli uninstall` for self-removal
 - `base-cli version` with pretty ASCII box display
 
-[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/ariel-frischer/base-cli/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/ariel-frischer/base-cli/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/ariel-frischer/base-cli/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ariel-frischer/base-cli/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ariel-frischer/base-cli/compare/v0.0.1...v0.1.0

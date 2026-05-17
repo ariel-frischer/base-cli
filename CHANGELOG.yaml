@@ -1,6 +1,8 @@
 project: base-cli
 versions:
-    unreleased:
+    unreleased: {}
+    0.2.2:
+        date: 2026-05-16
         changed:
             - GitHub tag releases now run through a release workflow that extracts version notes from chlog/CHANGELOG.md and passes them to GoReleaser automatically.
     0.2.1:
