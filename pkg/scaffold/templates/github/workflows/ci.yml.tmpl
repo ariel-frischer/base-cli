@@ -68,7 +68,7 @@ jobs:
         run: go tool cover -func=coverage.out
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage.out
@@ -97,7 +97,7 @@ jobs:
         run: make build VERSION=dev
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: [% .BinaryName %]-${{ matrix.os }}-${{ matrix.arch }}
           path: bin/[% .BinaryName %]*

@@ -17,6 +17,16 @@ if [[ -n "$(git status --porcelain)" ]]; then
   exit 1
 fi
 
+echo "==> Checking Go module updates..."
+OUTDATED_MODULES="$(go list -u -m $(go mod edit -json | sed -n '/"Require": \[/,/\]/{s/.*"Path": "\([^"]*\)".*/\1/p}') | awk '$3 ~ /^\[/ { print }')"
+if [[ -n "$OUTDATED_MODULES" ]]; then
+  echo "Error: Go modules are not up to date:"
+  echo "$OUTDATED_MODULES"
+  echo ""
+  echo "Update dependencies before releasing, then run go mod tidy."
+  exit 1
+fi
+
 echo "==> Running tests..."
 make test
 

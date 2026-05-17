@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Updated base-cli and generated project dependency pins for color, terminal, pflag, and x/sys modules; generated GitHub workflows now use current upload-artifact and GoReleaser action majors.
+- Release preflight now fails automatically when Go modules have available updates, and the repo-local release skill documents the dependency freshness gate.
+
 ## [0.2.0] - 2026-05-16
 
 ### Added
